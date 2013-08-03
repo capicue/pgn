@@ -1,4 +1,4 @@
-# Pgn
+# PGN
 
 TODO: Write a gem description
 

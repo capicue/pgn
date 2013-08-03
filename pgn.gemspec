@@ -5,7 +5,7 @@ require 'pgn/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "pgn"
-  spec.version       = Pgn::VERSION
+  spec.version       = PGN::VERSION
   spec.authors       = ["Stacey Touset"]
   spec.email         = ["stacey@touset.org"]
   spec.description   = %q{TODO: Write a gem description}

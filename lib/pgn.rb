@@ -1,5 +1,5 @@
 require "pgn/version"
 
-module Pgn
+module PGN
   # Your code goes here...
 end
