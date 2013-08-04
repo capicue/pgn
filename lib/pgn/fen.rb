@@ -13,6 +13,7 @@ module PGN
       rows = board.split(/\//)
       rows = rows.map {|row| row.gsub(/\d/) {|match| "_" * match.to_i } }
       rows = rows.map {|row| row.split('') }
+      rows = rows.map {|row| row.map {|r| r == '_' ? nil : r } }
       PGN::Position.new(rows, active, castling, en_passant, halfmove, fullmove)
     end
 
