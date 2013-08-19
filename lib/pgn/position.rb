@@ -17,6 +17,10 @@ module PGN
       self.fullmove   = fullmove
     end
 
+    def dup
+      PGN::Position.new(self.board.squares, self.active, self.castling, self.en_passant, self.halfmove, self.fullmove)
+    end
+
     def to_fen
       fen_parts = [
         self.board.to_fen_str,

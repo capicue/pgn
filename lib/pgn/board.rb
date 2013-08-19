@@ -30,6 +30,23 @@ module PGN
     BISHOP_DIRECTIONS = [[ 1,  1], [-1,  1], [-1, -1], [ 1, -1]]
     QUEEN_DIRECTIONS  = ROOK_DIRECTIONS + BISHOP_DIRECTIONS
 
+    beg = 0xe2.chr + 0x99.chr
+    UNICODE = {
+      'k' => beg + 0x9a.chr,
+      'q' => beg + 0x9b.chr,
+      'r' => beg + 0x9c.chr,
+      'b' => beg + 0x9d.chr,
+      'n' => beg + 0x9e.chr,
+      'p' => beg + 0x9f.chr,
+      'K' => beg + 0x94.chr,
+      'Q' => beg + 0x95.chr,
+      'R' => beg + 0x96.chr,
+      'B' => beg + 0x97.chr,
+      'N' => beg + 0x98.chr,
+      'P' => beg + 0x99.chr,
+      '_' => '_',
+    }
+
     attr_accessor :squares
 
     def initialize(squares)
@@ -188,7 +205,7 @@ module PGN
     end
 
     def inspect
-      "\n" + self.squares.map {|s| s.join(' ') }.join("\n")
+      "\n" + self.squares.map {|s| s.map{|chr| UNICODE[chr] }.join(' ') }.join("\n")
     end
   end
 end
