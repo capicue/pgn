@@ -4,7 +4,7 @@ module PGN
 
     LEFT  = "a"
     RIGHT = "d"
-    EXIT  = "\u0003"
+    EXIT  = "\u{0003}"
 
     def initialize(tags, moves, result)
       self.tags   = tags

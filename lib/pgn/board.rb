@@ -30,20 +30,19 @@ module PGN
     BISHOP_DIRECTIONS = [[ 1,  1], [-1,  1], [-1, -1], [ 1, -1]]
     QUEEN_DIRECTIONS  = ROOK_DIRECTIONS + BISHOP_DIRECTIONS
 
-    beg = 0xe2.chr + 0x99.chr
     UNICODE = {
-      'k' => beg + 0x9a.chr,
-      'q' => beg + 0x9b.chr,
-      'r' => beg + 0x9c.chr,
-      'b' => beg + 0x9d.chr,
-      'n' => beg + 0x9e.chr,
-      'p' => beg + 0x9f.chr,
-      'K' => beg + 0x94.chr,
-      'Q' => beg + 0x95.chr,
-      'R' => beg + 0x96.chr,
-      'B' => beg + 0x97.chr,
-      'N' => beg + 0x98.chr,
-      'P' => beg + 0x99.chr,
+      'k' => "\u{265A}",
+      'q' => "\u{265B}",
+      'r' => "\u{265C}",
+      'b' => "\u{265D}",
+      'n' => "\u{265E}",
+      'p' => "\u{265F}",
+      'K' => "\u{2654}",
+      'Q' => "\u{2655}",
+      'R' => "\u{2656}",
+      'B' => "\u{2657}",
+      'N' => "\u{2658}",
+      'P' => "\u{2659}",
       '_' => '_',
     }
 
