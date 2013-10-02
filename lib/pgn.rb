@@ -1,22 +1,16 @@
 require "pgn/board"
 require "pgn/fen"
 require "pgn/game"
+require "pgn/parser"
 require "pgn/position"
 require "pgn/version"
 
 module PGN
   def self.parse(pgn)
-    pgn    = pgn.gsub(/\]\n\n/, "]\n")
-    games  = pgn.split("\n\n")
-    games.map do |game|
-      game   = game.gsub("\n", " ")
-      tags   = Hash[game.scan(/\[(.*?)\ \"(.*?)\"\]/)]
-      moves  = game.gsub(/\[(.*?)\ \"(.*?)\"\]/, '').strip
-      moves  = moves.split
-      moves  = moves.delete_if {|m| m.match(/\d+\./) }
-      result = moves.pop
+    pgn.force_encoding(Encoding::ISO_8859_1)
 
-      PGN::Game.new(tags, moves, result)
+    PGN::Parser.new.parse(pgn).map do |game|
+      PGN::Game.new(game[:tags], game[:moves], game[:result])
     end
   end
 end
