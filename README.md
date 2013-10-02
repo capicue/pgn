@@ -1,6 +1,46 @@
 # PGN
 
-TODO: Write a gem description
+A ruby parser for pgn files. 
+
+## Usage
+
+```ruby
+games = PGN.parse(File.read("./examples/immortal_game.pgn"))
+game  = games.first
+game.play
+```
+
+Play through the game using `a` to move backward and `d` to move
+forward. CTRL-C quits.
+
+```
+♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+_ _ _ _ _ _ _ _
+_ _ _ _ _ _ _ _
+_ _ _ _ _ _ _ _
+_ _ _ _ _ _ _ _
+♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+
+♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+_ _ _ _ _ _ _ _
+_ _ _ _ _ _ _ _
+_ _ _ _ ♙ _ _ _
+_ _ _ _ _ _ _ _
+♙ ♙ ♙ ♙ _ ♙ ♙ ♙
+♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+
+♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+♟ ♟ ♟ ♟ _ ♟ ♟ ♟
+_ _ _ _ _ _ _ _
+_ _ _ _ ♟ _ _ _
+_ _ _ _ ♙ _ _ _
+_ _ _ _ _ _ _ _
+♙ ♙ ♙ ♙ _ ♙ ♙ ♙
+♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+```
 
 ## Installation
 
@@ -15,10 +55,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install pgn
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Contributing
 
