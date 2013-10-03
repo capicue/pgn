@@ -89,12 +89,12 @@ module PGN
       end
 
       case str
-      when 'O-O-O'
+      when 'Q'
         @squares[0][rank] = nil
         @squares[2][rank] = king
         @squares[3][rank] = rook
         @squares[4][rank] = nil
-      when 'O-O'
+      when 'K'
         @squares[4][rank] = nil
         @squares[5][rank] = rook
         @squares[6][rank] = king
@@ -134,8 +134,11 @@ module PGN
         move_origins(KING_MOVES, piece, file, rank)
       end
 
+      # disambiguate
       if possibilities.length > 1
-        possibilities.select! {|p| self.position_for(p).match(specifier) }
+        if specifier
+          possibilities.select! {|p| self.position_for(p).match(specifier) }
+        end
       end
 
       raise if possibilities.length > 1

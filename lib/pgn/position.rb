@@ -39,33 +39,27 @@ module PGN
     end
 
     def move(str)
-      str, check = str.partition('+')
-      str, mate  = str.partition('#')
+      move = PGN::Move.new(str)
 
-      if str[0] == 'O'
-        self.board.castle(str, self.active)
+      if move.castle
+        self.board.castle(move.castle, self.active)
       else
-        str,   promoted    = str.split("=")
-        str,   destination = str.partition(SQUARE_REGEX)
-        str,   capture     = str.partition("x")
-        piece, specifier   = str.partition(%r{[a-h]|[1-8]})
-
-        check   = !check.empty?
-        mate    = !mate.empty?
-        capture = !capture.empty?
-
-        specifier = specifier.empty? ? nil : specifier
-        piece     = piece.empty?     ? "P" : piece
+        piece = move.piece
         piece.downcase! if self.active == 'b'
 
         origin = self.board.compute_origin(
           piece,
-          destination,
-          specifier,
-          capture,
+          move.destination,
+          move.disambiguation,
+          move.capture,
         )
 
-        self.board.move(origin, destination, piece, promoted)
+        self.board.move(
+          origin,
+          move.destination,
+          piece,
+          move.promotion
+        )
       end
 
       flip_active
