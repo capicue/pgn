@@ -1,6 +1,10 @@
 module PGN
+  # This class is responsible for parsing a move in Standard Algebraic
+  # Notation and extracting all of the information contained in the move
+  # string.
+  #
   class Move
-    attr_accessor :san
+    attr_accessor :san, :active
     attr_accessor :piece, :destination, :promotion, :check, :capture, :disambiguation, :castle
 
     # A regular expression for matching moves in standard algebraic
@@ -29,8 +33,10 @@ module PGN
     # Extracts information from a move string
     #
     # @param move [String] the move in standard algebraic notation
-    def initialize(move)
-      self.san = move
+    # @param active [String<'w', 'b'>] designates white or black to move
+    def initialize(move, active)
+      self.active = active
+      self.san    = move
 
       match = move.match(SAN_REGEX)
 
@@ -41,8 +47,15 @@ module PGN
       end
     end
 
+    # Uppercase represents white, lowercase represents black
+    #
+    # @return [String] the piece being moved
+    #
     def piece=(val)
-      @piece = val || "P"
+      val ||= "P"
+      @piece = self.active == 'b' ?
+        val.downcase :
+        val
     end
 
     def promotion=(val)
@@ -58,8 +71,11 @@ module PGN
     end
 
     def castle=(val)
-      @castle = "K" if val == "O-O"
-      @castle = "Q" if val == "O-O-O"
+      if val
+        @castle = "K" if val == "O-O"
+        @castle = "Q" if val == "O-O-O"
+        @castle.downcase! if self.active == 'b'
+      end
     end
 
     def check?

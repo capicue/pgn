@@ -1,7 +1,7 @@
-require "pgn/board"
 require "pgn/fen"
 require "pgn/game"
 require "pgn/move"
+require "pgn/move_calculator"
 require "pgn/parser"
 require "pgn/position"
 require "pgn/version"

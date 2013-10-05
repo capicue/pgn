@@ -15,10 +15,11 @@ module PGN
     def positions
       @positions ||= begin
         position = PGN::Position.start
-        arr = [position.dup]
+        arr = [position]
         self.moves.each do |move|
-          position.move(move)
-          arr << position.dup
+          new_pos = position.move(move)
+          arr << new_pos
+          position = new_pos
         end
         arr
       end

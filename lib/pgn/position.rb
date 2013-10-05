@@ -1,80 +1,75 @@
 module PGN
+  # This class is essentially a wrapper around a {PGN::FEN} object that
+  # feels like a notation-independent chess position.
+  #
   class Position
+    extend Forwardable
+
+    attr_accessor :fen
+    def_delegators :@fen, :active,     :active=
+    def_delegators :@fen, :squares,    :squares=
+    def_delegators :@fen, :castling,   :castling=
+    def_delegators :@fen, :en_passant, :en_passant=
+    def_delegators :@fen, :halfmove,   :halfmove=
+    def_delegators :@fen, :fullmove,   :fullmove=
+
     SQUARE_REGEX = %r{[a-h][1-8]}
 
-    attr_accessor :board, :active, :castling, :en_passant, :halfmove, :fullmove
+    PLAYERS = ['w', 'b']
+
+    UNICODE_PIECES = {
+      'k' => "\u{265A}",
+      'q' => "\u{265B}",
+      'r' => "\u{265C}",
+      'b' => "\u{265D}",
+      'n' => "\u{265E}",
+      'p' => "\u{265F}",
+      'K' => "\u{2654}",
+      'Q' => "\u{2655}",
+      'R' => "\u{2656}",
+      'B' => "\u{2657}",
+      'N' => "\u{2658}",
+      'P' => "\u{2659}",
+      '_' => '_',
+    }
 
     def self.start
       PGN::FEN.new.to_position
     end
 
-    def initialize(board, active, castling, en_passant, halfmove, fullmove)
-      self.board      = PGN::Board.new(board)
-      self.active     = active
-      self.castling   = castling
-      self.en_passant = en_passant
-      self.halfmove   = halfmove
-      self.fullmove   = fullmove
-    end
-
-    def dup
-      PGN::Position.new(self.board.squares, self.active, self.castling, self.en_passant, self.halfmove, self.fullmove)
-    end
-
-    def to_fen
-      fen_parts = [
-        self.board.to_fen_str,
-        self.active,
-        self.castling,
-        self.en_passant,
-        self.halfmove,
-        self.fullmove,
-      ]
-
-      PGN::FEN.new(fen_parts.join(' '))
-    end
-
-    def inspect
-      self.board.inspect
+    # @param fen [PGN::FEN] a fen object for the current position
+    #
+    def initialize(fen)
+      self.fen = fen
     end
 
     def move(str)
-      move = PGN::Move.new(str)
+      move       = PGN::Move.new(str, self.active)
+      calculator = PGN::MoveCalculator.new(self, move)
 
-      if move.castle
-        self.board.castle(move.castle, self.active)
-      else
-        piece = move.piece
-        piece.downcase! if self.active == 'b'
+      result = self.dup
 
-        origin = self.board.compute_origin(
-          piece,
-          move.destination,
-          move.disambiguation,
-          move.capture,
-        )
+      result.squares    = calculator.new_squares
+      result.castling   = calculator.castling
+      result.en_passant = calculator.en_passant
+      result.halfmove   = calculator.halfmove.to_s
+      result.fullmove   = calculator.fullmove.to_s
+      result.active     = calculator.active
 
-        self.board.move(
-          origin,
-          move.destination,
-          piece,
-          move.promotion
-        )
-      end
-
-      flip_active
-
-      self
+      result
     end
 
-    private
-
-    def flip_active
-      if self.active == 'w'
-        self.active = 'b'
-      else
-        self.active = 'w'
-      end
+    def dup
+      PGN::Position.new(self.fen.dup)
     end
+
+    def display_squares
+      self.squares.map(&:reverse).transpose.map {|row| row.map {|e| e.nil? ? "_" : e } }
+    end
+
+    def inspect
+      "\n" + self.display_squares.map {|s| s.map{|chr| UNICODE_PIECES[chr] }.join(' ') }.join("\n")
+    end
+
   end
 end
