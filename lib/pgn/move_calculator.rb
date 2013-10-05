@@ -100,6 +100,9 @@ module PGN
           self.move.destination => self.move.piece,
           en_passant_capture    => nil,
         )
+        if self.move.promotion
+          changes[self.move.destination] = self.move.promotion
+        end
 
         changes.reject! {|key, _| key.nil? }
 
@@ -119,6 +122,8 @@ module PGN
     #
     def en_passant
       compute_origin
+
+      return nil if move.castle
 
       @en_passant ||= begin
         if self.move.piece.match(/p/i) && (self.origin[1].to_i - self.move.destination[1].to_i).abs == 2
@@ -145,6 +150,9 @@ module PGN
           {"a8" => "q", "h8" => "k"}[self.origin]
         end
 
+        restrict = "KQ" if ['K', 'Q'].include? move.castle
+        restrict = "kq" if ['k', 'q'].include? move.castle
+
         castling = self.position.castling.dup
         castling = castling.delete(restrict) if restrict
         castling = "-" if castling.nil?
@@ -157,7 +165,7 @@ module PGN
     #
     def halfmove
       @halfmove ||= begin
-        self.move.capture || self.move.piece.match(/p/i) ?
+        self.move.capture || ['P', 'p'].include?(self.move.piece) ?
           0 :
           self.position.halfmove.to_i + 1
       end
@@ -268,13 +276,23 @@ module PGN
     end
 
     def disambiguate(possibilities)
-      raise NotImplementedError
+      if move.disambiguation
+        possibilities.select! {|p| position_for(p).match(move.disambiguation) }
+      end
+
+      if possibilities.length == 1
+        return possibilities
+      else
+        raise NotImplementedError
+      end
     end
 
     # If the move is a capture and there is no piece on the
     # destination square, it must be an en passant capture.
     #
     def en_passant_capture
+      return nil if self.move.castle
+
       if !piece_at(self.move.destination) && self.move.capture
         self.move.destination[0] + self.origin[1]
       end

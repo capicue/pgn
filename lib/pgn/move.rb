@@ -52,6 +52,8 @@ module PGN
     # @return [String] the piece being moved
     #
     def piece=(val)
+      return if san.match("O-O")
+
       val ||= "P"
       @piece = self.active == 'b' ?
         val.downcase :
@@ -59,7 +61,10 @@ module PGN
     end
 
     def promotion=(val)
-      @promotion = val.delete("=") if val
+      if val
+        val.downcase! if self.active == 'b'
+        @promotion = val.delete("=")
+      end
     end
 
     def capture=(val)
