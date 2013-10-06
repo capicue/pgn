@@ -55,14 +55,14 @@ module PGN
       return if san.match("O-O")
 
       val ||= "P"
-      @piece = self.active == 'b' ?
+      @piece = self.black? ?
         val.downcase :
         val
     end
 
     def promotion=(val)
       if val
-        val.downcase! if self.active == 'b'
+        val.downcase! if self.black?
         @promotion = val.delete("=")
       end
     end
@@ -79,7 +79,7 @@ module PGN
       if val
         @castle = "K" if val == "O-O"
         @castle = "Q" if val == "O-O-O"
-        @castle.downcase! if self.active == 'b'
+        @castle.downcase! if self.black?
       end
     end
 
@@ -89,6 +89,14 @@ module PGN
 
     def checkmate?
       self.check == "#"
+    end
+
+    def white?
+      self.active == 'w'
+    end
+
+    def black?
+      self.active == 'b'
     end
 
   end

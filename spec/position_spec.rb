@@ -7,11 +7,11 @@ describe PGN::Position do
       next_pos = pos.move("Ndb5")
 
       it "should move the specified piece" do
-        next_pos.squares[3][3].should be_nil
+        next_pos.board.at("d4").should be_nil
       end
 
       it "should not move the other piece" do
-        next_pos.squares[2][2].should == "N"
+        next_pos.board.at("c3").should == "N"
       end
     end
 
@@ -20,11 +20,11 @@ describe PGN::Position do
       next_pos = pos.move("Ne2")
 
       it "should move the piece that doesn't give discovered check" do
-        next_pos.squares[6][0].should be_nil
+        next_pos.board.at("g1").should be_nil
       end
 
       it "shouldn't move the other piece" do
-        next_pos.squares[2][2].should == "N"
+        next_pos.board.at("c3").should == "N"
       end
     end
 
@@ -33,11 +33,11 @@ describe PGN::Position do
       next_pos = pos.move("f4")
 
       it "should move the pawn in front" do
-        next_pos.squares[5][2].should be_nil
+        next_pos.board.at("f3").should be_nil
       end
 
       it "should not move the other pawn" do
-        next_pos.squares[5][1].should == "P"
+        next_pos.board.at("f2").should == "P"
       end
     end
   end

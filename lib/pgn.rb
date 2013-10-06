@@ -1,3 +1,4 @@
+require "pgn/board"
 require "pgn/fen"
 require "pgn/game"
 require "pgn/move"

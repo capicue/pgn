@@ -7,49 +7,58 @@ module PGN
     # The FEN string representing the starting position in chess
     INITIAL = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
-    attr_accessor :fen
     attr_accessor :board, :active, :castling, :en_passant, :halfmove, :fullmove
-    attr_accessor :squares
 
     # http://en.wikipedia.org/wiki/Forsyth-Edwards_Notation
     #
     # @param fen [String] a string in Forsyth-Edwards Notation
     #
-    def initialize(fen = INITIAL)
-      self.fen = fen
-      self.board,
+    def initialize(arg = INITIAL)
+      case arg
+      when String
+        self.fen_string = arg
+      when Hash
+        arg.each do |key, val|
+          self.send("#{key}=", val)
+        end
+      end
+    end
+
+    def en_passant=(val)
+      @en_passant = val.nil? ? "-" : val
+    end
+
+    def castling=(val)
+      @castling = (val.nil? || val.empty?) ? "-" : val
+    end
+
+    # @param board_fen [String] the fen representation of the board
+    #
+    def board_string=(board_fen)
+      squares = board_fen.gsub(/\d/) {|match| "_" * match.to_i }
+                         .split("/")
+                         .map {|row| row.split('') }
+                         .reverse
+                         .transpose
+      self.board = PGN::Board.new(squares)
+    end
+
+    def fen_string=(str)
+      self.board_string,
         self.active,
         self.castling,
         self.en_passant,
         self.halfmove,
-        self.fullmove = self.fen.split
+        self.fullmove = str.split
     end
 
-    # Sets @squares to a two dimensional array of the squares on the
-    # board in the same order that is used in FEN. This representation
-    # facilitates making moves. Occupied squares are represented using a
-    # single letter, and unoccupied squares are represented by nil.
-    #
-    # @param board [String] the fen representation of the board
-    #
-    def board=(board)
-      rows = board.split(/\//)
-      rows = rows.map {|row| row.gsub(/\d/) {|match| "_" * match.to_i } }
-      rows = rows.map {|row| row.split('') }
-      rows = rows.map {|row| row.map {|r| r == '_' ? nil : r } }
-      self.squares = rows.transpose.map(&:reverse)
-    end
-
-    # Turns the internal 2D array board representation into FEN format.
-    #
-    # @return ["String"] the fen representation of the board
-    #
-    def board
-      rows = self.squares.map(&:reverse).transpose
-      rows = rows.map {|row| row.map {|e| e.nil? ? "_" : e } }
-      rows = rows.map {|row| row.join }
-      rows = rows.map {|row| row.gsub(/_+/) {|match| match.length } }
-      rows.join("/")
+    def fen_string
+      self.squares
+          .transpose
+          .reverse
+          .map {|row| row.join }
+          .join("/")
+          .gsub(/_+/) {|match| match.length }
     end
 
     # @return [PGN::Position] the position corresponding to the fen
@@ -61,7 +70,7 @@ module PGN
 
     def to_s
       [
-        self.board,
+        self.board.fen_string,
         self.active,
         self.castling,
         self.en_passant,
@@ -71,7 +80,7 @@ module PGN
     end
 
     def inspect
-      self.fen
+      self.to_s
     end
   end
 end
