@@ -276,15 +276,62 @@ module PGN
     end
 
     def disambiguate(possibilities)
-      if move.disambiguation
-        possibilities.select! {|p| position_for(p).match(move.disambiguation) }
+      possibilities = disambiguate_san(possibilities)
+      possibilities = disambiguate_pawns(possibilities)            if possibilities.length > 1
+      possibilities = disambiguate_discovered_check(possibilities) if possibilities.length > 1
+
+      possibilities
+    end
+
+    # Try to disambiguate based on the standard algebraic notation.
+    #
+    def disambiguate_san(possibilities)
+      move.disambiguation ?
+        possibilities.select {|p| position_for(p).match(move.disambiguation) } :
+        possibilities
+    end
+
+    # A pawn can't move two spaces if there is a pawn in front of it.
+    #
+    def disambiguate_pawns(possibilities)
+      self.move.piece.match(/p/i) && !self.move.capture ?
+        possibilities.reject {|p| position_for(p).match(/2|7/) } :
+        possibilities
+    end
+
+    # A piece can't move if it would result in a discovered check.
+    #
+    def disambiguate_discovered_check(possibilities)
+      DIRECTIONS.each do |attacking_piece, directions|
+        attacking_piece = attacking_piece.upcase if self.move.active == 'b'
+
+        directions.each do |i, j|
+          file, rank = king_position
+          seen_moving_piece = false
+
+          loop do
+            file += i
+            rank += j
+
+            break unless valid_square?(file, rank)
+            next  unless current_piece = piece_at(file, rank)
+
+            if seen_moving_piece
+              current_piece == attacking_piece ?
+                possibilities.reject! {|p| p == seen_moving_piece } :
+                break
+            else
+              if current_piece == self.move.piece
+                seen_moving_piece = [file, rank] if possibilities.include?([file, rank])
+              else
+                break
+              end
+            end
+          end
+        end
       end
 
-      if possibilities.length == 1
-        return possibilities
-      else
-        raise NotImplementedError
-      end
+      possibilities
     end
 
     # If the move is a capture and there is no piece on the
@@ -323,6 +370,21 @@ module PGN
       when 2
         self.position.squares[args[0]][args[1]]
       end
+    end
+
+    def king_position
+      king = self.move.active == 'w' ? 'K' : 'k'
+
+      coords = nil
+      0.upto(7) do |file|
+        0.upto(7) do |rank|
+          if piece_at(file, rank) == king
+            coords = [file, rank]
+          end
+        end
+      end
+
+      coords
     end
 
     def valid_square?(file, rank)

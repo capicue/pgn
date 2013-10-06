@@ -40,6 +40,7 @@ module PGN
     # @param fen [PGN::FEN] a fen object for the current position
     #
     def initialize(fen)
+      fen = PGN::FEN.new(fen) if fen.is_a? String
       self.fen = fen
     end
 
