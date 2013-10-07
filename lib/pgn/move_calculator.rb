@@ -248,10 +248,12 @@ module PGN
     def disambiguate_discovered_check(possibilities)
       DIRECTIONS.each do |attacking_piece, directions|
         attacking_piece = attacking_piece.upcase if self.move.black?
+        king_file, king_rank = king_position
 
         directions.each do |i, j|
-          file, rank = king_position
           seen_moving_piece = false
+          file = king_file
+          rank = king_rank
 
           loop do
             file += i
@@ -265,11 +267,9 @@ module PGN
                 possibilities.reject! {|p| p == seen_moving_piece } :
                 break
             else
-              if current_piece == self.move.piece
-                seen_moving_piece = [file, rank] if possibilities.include?([file, rank])
-              else
+              current_piece == self.move.piece && possibilities.include?([file, rank]) ?
+                seen_moving_piece = [file, rank] :
                 break
-              end
             end
           end
         end
