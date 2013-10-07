@@ -12,7 +12,7 @@ module PGN
     pgn.force_encoding(Encoding::ISO_8859_1)
 
     PGN::Parser.new.parse(pgn).map do |game|
-      PGN::Game.new(game[:tags], game[:moves], game[:result])
+      PGN::Game.new(game[:moves], game[:tags], game[:result])
     end
   end
 end

@@ -9,19 +9,24 @@ module PGN
 
     attr_accessor :board, :active, :castling, :en_passant, :halfmove, :fullmove
 
+    def self.start
+      PGN::FEN.new(INITIAL)
+    end
+
+    def self.from_attributes(attrs)
+      fen = PGN::FEN.new
+      attrs.each do |key, val|
+        fen.send("#{key}=", val)
+      end
+      fen
+    end
+
     # http://en.wikipedia.org/wiki/Forsyth-Edwards_Notation
     #
     # @param fen [String] a string in Forsyth-Edwards Notation
     #
-    def initialize(arg = INITIAL)
-      case arg
-      when String
-        self.fen_string = arg
-      when Hash
-        arg.each do |key, val|
-          self.send("#{key}=", val)
-        end
-      end
+    def initialize(fen_string = nil)
+      self.fen_string = fen_string if fen_string
     end
 
     def en_passant=(val)
@@ -53,7 +58,8 @@ module PGN
     end
 
     def fen_string
-      self.squares
+      self.board
+          .squares
           .transpose
           .reverse
           .map {|row| row.join }
@@ -78,7 +84,7 @@ module PGN
 
     def to_s
       [
-        self.board.fen_string,
+        self.fen_string,
         self.active,
         self.castling,
         self.en_passant,

@@ -60,5 +60,16 @@ module PGN
       "\n" + self.board.inspect
     end
 
+    def to_fen
+      PGN::FEN.from_attributes(
+        board:      self.board,
+        active:     self.player == :white ? 'w' : 'b',
+        castling:   self.castling.join(''),
+        en_passant: self.en_passant,
+        halfmove:   self.halfmove.to_s,
+        fullmove:   self.fullmove.to_s,
+      )
+    end
+
   end
 end

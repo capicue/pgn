@@ -6,9 +6,9 @@ module PGN
     RIGHT = "d"
     EXIT  = "\u{0003}"
 
-    def initialize(tags, moves, result)
-      self.tags   = tags
+    def initialize(moves, tags = nil, result = nil)
       self.moves  = moves
+      self.tags   = tags
       self.result = result
     end
 
