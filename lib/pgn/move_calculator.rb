@@ -170,14 +170,9 @@ module PGN
       directions    = DIRECTIONS[move.piece.downcase]
       possibilities = []
 
-      directions.each do |i, j|
-        file, rank = destination_coords
-
-        while valid_square?(file += i, rank += j)
-          piece = self.board.at(file, rank)
-          possibilities << [file, rank] if piece == move.piece
-          break if piece
-        end
+      directions.each do |dir|
+        piece, square = first_piece(destination_coords, dir)
+        possibilities << square if piece == self.move.piece
       end
 
       possibilities
@@ -248,34 +243,30 @@ module PGN
     def disambiguate_discovered_check(possibilities)
       DIRECTIONS.each do |attacking_piece, directions|
         attacking_piece = attacking_piece.upcase if self.move.black?
-        king_file, king_rank = king_position
 
-        directions.each do |i, j|
-          seen_moving_piece = false
-          file = king_file
-          rank = king_rank
+        directions.each do |dir|
+          piece, square = first_piece(king_position, dir)
+          next unless piece == self.move.piece && possibilities.include?(square)
 
-          loop do
-            file += i
-            rank += j
-
-            break unless valid_square?(file, rank)
-            next  unless current_piece = self.board.at(file, rank)
-
-            if seen_moving_piece
-              current_piece == attacking_piece ?
-                possibilities.reject! {|p| p == seen_moving_piece } :
-                break
-            else
-              current_piece == self.move.piece && possibilities.include?([file, rank]) ?
-                seen_moving_piece = [file, rank] :
-                break
-            end
-          end
+          piece, _ = first_piece(square, dir)
+          possibilities.reject! {|p| p == square } if piece == attacking_piece
         end
       end
 
       possibilities
+    end
+
+    def first_piece(from, direction)
+      file, rank = from
+      i,    j    = direction
+
+      piece = nil
+
+      while valid_square?(file += i, rank += j)
+        break if piece = self.board.at(file, rank)
+      end
+
+      [piece, [file, rank]]
     end
 
     # If the move is a capture and there is no piece on the
