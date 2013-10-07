@@ -54,18 +54,16 @@ module PGN
       },
     }
 
-    attr_accessor :position, :move, :board
+    attr_accessor :board
+    attr_accessor :move
     attr_accessor :origin
 
-    def initialize(position, move)
-      self.position = position
-      self.move     = move
-      self.board    = position.board
+    def initialize(board, move)
+      self.board = board
+      self.move  = move
     end
 
-    # Determine where everything is in the board for the new position.
-    #
-    def new_board
+    def result_board
       compute_origin
 
       new_board = self.board.dup
@@ -73,6 +71,48 @@ module PGN
 
       new_board
     end
+
+    def castling_restrictions
+      compute_origin
+
+      restrict = case self.move.piece
+      when "K" then "KQ"
+      when "k" then "kq"
+      when "R"
+        {"a1" => "Q", "h1" => "K"}[self.origin]
+      when "r"
+        {"a8" => "q", "h8" => "k"}[self.origin]
+      else
+        ""
+      end
+
+      restrict = "KQ" if ['K', 'Q'].include? move.castle
+      restrict = "kq" if ['k', 'q'].include? move.castle
+
+      restrict.split('')
+    end
+
+    def increment_halfmove?
+      !(self.move.capture || self.move.pawn?)
+    end
+
+    def increment_fullmove?
+      self.move.black?
+    end
+
+    def en_passant_square
+      compute_origin
+
+      return nil if move.castle
+
+      if self.move.pawn? && (self.origin[1].to_i - self.move.destination[1].to_i).abs == 2
+        self.move.white? ?
+          self.origin[0] + '3' :
+          self.origin[0] + '6'
+      end
+    end
+
+    private
 
     def changes
       compute_origin
@@ -92,70 +132,6 @@ module PGN
 
       changes
     end
-
-    # If the moving piece is a pawn and it moved two squares, the en
-    # passant square is needed for FEN notation.
-    #
-    def en_passant
-      compute_origin
-
-      return nil if move.castle
-
-      if self.move.piece.match(/p/i) && (self.origin[1].to_i - self.move.destination[1].to_i).abs == 2
-        self.move.white? ?
-          self.origin[0] + '3' :
-          self.origin[0] + '6'
-      end
-    end
-
-    # Determines which castling moves are still available based on the
-    # rook and king movements.
-    #
-    def castling
-      compute_origin
-
-      restrict = case self.move.piece
-      when "K" then "KQ"
-      when "k" then "kq"
-      when "R"
-        {"a1" => "Q", "h1" => "K"}[self.origin]
-      when "r"
-        {"a8" => "q", "h8" => "k"}[self.origin]
-      end
-
-      restrict = "KQ" if ['K', 'Q'].include? move.castle
-      restrict = "kq" if ['k', 'q'].include? move.castle
-
-      castling = self.position.castling.dup
-      castling = castling.delete(restrict) if restrict
-      castling = "-" if castling.nil?
-      castling
-    end
-
-    # The halfmove counter represents the number of halfmoves since the
-    # last pawn advance or capture.
-    #
-    def halfmove
-      self.move.capture || ['P', 'p'].include?(self.move.piece) ?
-        0 :
-        self.position.halfmove.to_i + 1
-    end
-
-    # The fullmove counter gets incremented after black plays.
-    #
-    def fullmove
-      self.move.black? ?
-        self.position.fullmove.to_i + 1 :
-        self.position.fullmove.to_i
-    end
-
-    # The active player after the move is made.
-    #
-    def active
-      self.move.white? ? 'b' : 'w'
-    end
-
-    private
 
     # Using the current position and move, figure out where the piece
     # came from.

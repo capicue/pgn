@@ -1,49 +1,59 @@
 module PGN
-  # This class is essentially a wrapper around a {PGN::FEN} object that
-  # feels like a notation-independent chess position.
-  #
   class Position
-    extend Forwardable
+    PLAYERS  = [:white, :black]
+    CASTLING = %w{K Q k q}
 
-    attr_accessor :fen
-    def_delegators :@fen, :active,     :active=
-    def_delegators :@fen, :board,      :board=
-    def_delegators :@fen, :castling,   :castling=
-    def_delegators :@fen, :en_passant, :en_passant=
-    def_delegators :@fen, :halfmove,   :halfmove=
-    def_delegators :@fen, :fullmove,   :fullmove=
-
-    SQUARE_REGEX = %r{[a-h][1-8]}
+    attr_accessor :board
+    attr_accessor :player
+    attr_accessor :castling
+    attr_accessor :en_passant
+    attr_accessor :halfmove
+    attr_accessor :fullmove
 
     def self.start
-      PGN::FEN.new.to_position
+      PGN::Position.new(
+        PGN::Board.start,
+        PLAYERS.first,
+        castling: CASTLING,
+        en_passant: nil,
+        halfmove: 0,
+        fullmove: 0,
+      )
     end
 
-    # @param fen [PGN::FEN] a fen object for the current position
-    #
-    def initialize(fen)
-      fen = PGN::FEN.new(fen) if fen.is_a? String
-      self.fen = fen
-    end
+    def initialize(board, player, castling: [], en_passant: nil, halfmove: 0, fullmove: 0)
+      self.board      = board
+      self.player     = player
+      self.castling   = castling
+      self.en_passant = en_passant
+      self.halfmove   = halfmove
+      self.fullmove   = fullmove
+    end 
 
     def move(str)
-      move       = PGN::Move.new(str, self.active)
-      calculator = PGN::MoveCalculator.new(self, move)
+      move       = PGN::Move.new(str, self.player)
+      calculator = PGN::MoveCalculator.new(self.board, move)
 
-      result = self.dup
+      new_castling = self.castling - calculator.castling_restrictions
+      new_halfmove = calculator.increment_halfmove? ?
+        self.halfmove + 1 :
+        0
+      new_fullmove = calculator.increment_fullmove? ?
+        self.fullmove + 1 :
+        self.fullmove
 
-      result.board      = calculator.new_board
-      result.castling   = calculator.castling
-      result.en_passant = calculator.en_passant
-      result.halfmove   = calculator.halfmove.to_s
-      result.fullmove   = calculator.fullmove.to_s
-      result.active     = calculator.active
-
-      result
+      PGN::Position.new(
+        calculator.result_board,
+        self.next_player,
+        castling:   new_castling,
+        en_passant: calculator.en_passant_square,
+        halfmove:   new_halfmove,
+        fullmove:   new_fullmove,
+      )
     end
 
-    def dup
-      PGN::Position.new(self.fen.dup)
+    def next_player
+      (PLAYERS - [self.player]).first
     end
 
     def inspect

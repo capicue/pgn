@@ -4,7 +4,7 @@ module PGN
   # string.
   #
   class Move
-    attr_accessor :san, :active
+    attr_accessor :san, :player
     attr_accessor :piece, :destination, :promotion, :check, :capture, :disambiguation, :castle
 
     # A regular expression for matching moves in standard algebraic
@@ -30,12 +30,8 @@ module PGN
       \A (\g<castle> | \g<normal>) \g<check>? \z
     }x
 
-    # Extracts information from a move string
-    #
-    # @param move [String] the move in standard algebraic notation
-    # @param active [String<'w', 'b'>] designates white or black to move
-    def initialize(move, active)
-      self.active = active
+    def initialize(move, player)
+      self.player = player
       self.san    = move
 
       match = move.match(SAN_REGEX)
@@ -92,11 +88,15 @@ module PGN
     end
 
     def white?
-      self.active == 'w'
+      self.player == :white
     end
 
     def black?
-      self.active == 'b'
+      self.player == :black
+    end
+
+    def pawn?
+      self.piece.match(/p/i)
     end
 
   end

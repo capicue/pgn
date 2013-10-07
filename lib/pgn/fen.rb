@@ -61,11 +61,19 @@ module PGN
           .gsub(/_+/) {|match| match.length }
     end
 
-    # @return [PGN::Position] the position corresponding to the fen
-    # string
-    #
     def to_position
-      PGN::Position.new(self)
+      player     = self.active == 'w' ? :white : :black
+      castling   = self.castling.split('') - ['-']
+      en_passant = self.en_passant == '-' ? nil : en_passant
+
+      PGN::Position.new(
+        self.board,
+        player,
+        castling:   castling,
+        en_passant: en_passant,
+        halfmove:   self.halfmove.to_i,
+        fullmove:   self.fullmove.to_i,
+      )
     end
 
     def to_s

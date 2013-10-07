@@ -1,6 +1,15 @@
 module PGN
   class Board
-    attr_accessor :squares
+    START = [
+      ["R", "P", "_", "_", "_", "_", "p", "r"],
+      ["N", "P", "_", "_", "_", "_", "p", "n"],
+      ["B", "P", "_", "_", "_", "_", "p", "b"],
+      ["Q", "P", "_", "_", "_", "_", "p", "q"],
+      ["K", "P", "_", "_", "_", "_", "p", "k"],
+      ["B", "P", "_", "_", "_", "_", "p", "b"],
+      ["N", "P", "_", "_", "_", "_", "p", "n"],
+      ["R", "P", "_", "_", "_", "_", "p", "r"],
+    ]
 
     FILE_TO_INDEX = {
       'a' => 0,
@@ -41,6 +50,12 @@ module PGN
       'P' => "\u{2659}",
       '_' => '_',
     }
+
+    attr_accessor :squares
+
+    def self.start
+      PGN::Board.new(START)
+    end
 
     def initialize(squares)
       self.squares = squares
