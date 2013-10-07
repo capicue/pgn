@@ -1,10 +1,4 @@
 module PGN
-  # This class is responsible for taking a position and a move and
-  # figuring out which squares to update. This involves figuring out
-  # where the moving piece came from. This class also needs to determine
-  # how to update position states such as en passant, castling
-  # availability, and move counters.
-  #
   class MoveCalculator
     # Specifies the movement of pieces who are allowed to move in a
     # given direction until they reach an obstacle or the end of the
@@ -25,6 +19,19 @@ module PGN
               [ 1,  1], [ 0,  1], [-1,  1], [-1,  0]],
       'n' => [[-1, -2], [-1,  2], [ 1, -2], [ 1,  2],
               [-2, -1], [ 2, -1], [-2,  1], [ 2,  1]],
+    }
+
+    PAWN_MOVES = {
+      'P' => {
+        capture: [[-1, -1], [ 1, -1]],
+        normal:  [[ 0, -1]],
+        double:  [[ 0, -2]],
+      },
+      'p' => {
+        capture: [[-1,  1], [ 1,  1]],
+        normal:  [[ 0,  1]],
+        double:  [[ 0,  2]],
+      },
     }
 
     CASTLING = {
@@ -82,12 +89,12 @@ module PGN
         {"a1" => "Q", "h1" => "K"}[self.origin]
       when "r"
         {"a8" => "q", "h8" => "k"}[self.origin]
-      else
-        ""
       end
 
       restrict = "KQ" if ['K', 'Q'].include? move.castle
       restrict = "kq" if ['k', 'q'].include? move.castle
+
+      restrict ||= ''
 
       restrict.split('')
     end
@@ -180,10 +187,10 @@ module PGN
     # square and matches the moving piece, add it to the list of origin
     # possibilities.
     #
-    def move_origins
-      moves         = MOVES[move.piece.downcase]
-      possibilities = []
-      file, rank    = destination_coords
+    def move_origins(moves = nil)
+      moves         ||= MOVES[move.piece.downcase]
+      possibilities   = []
+      file, rank      = destination_coords
 
       moves.each do |i, j|
         f = file + i
@@ -201,22 +208,15 @@ module PGN
     # and whether or not the move is a capture.
     #
     def pawn_origins
-      possibilities = []
-      file, rank    = destination_coords
+      _, rank     = destination_coords
+      double_rank = (rank == 3 && self.move.white?) || (rank == 4 && self.move.black?)
 
-      dir = self.move.white? ? -1 : 1
+      pawn_moves = PAWN_MOVES[self.move.piece]
 
-      if self.move.capture
-        possibilities += [[file - 1, rank + dir], [file + 1, rank + dir]]
-      else
-        en_passant = (rank == 3 && dir == -1) || (rank == 4 && dir == 1)
+      moves = self.move.capture ? pawn_moves[:capture] : pawn_moves[:normal]
+      moves += pawn_moves[:double] if double_rank
 
-        possibilities << [file, rank + dir]
-        possibilities << [file, rank + (2 * dir)] if en_passant
-      end
-
-      possibilities.select! {|p| valid_square?(*p) && self.board.at(*p) == self.move.piece }
-      possibilities
+      move_origins(moves)
     end
 
     def disambiguate(possibilities)

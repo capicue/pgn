@@ -96,7 +96,7 @@ module PGN
     end
 
     def pawn?
-      self.piece.match(/p/i)
+      ['P', 'p'].include?(self.piece)
     end
 
   end
