@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = PGN::VERSION
   spec.authors       = ["Stacey Touset"]
   spec.email         = ["stacey@touset.org"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{A PGN parser and FEN generator for Ruby}
+  spec.summary       = %q{A PGN parser for Ruby}
+  spec.homepage      = "https://github.com/capicue/pgn"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
@@ -23,5 +23,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
-  spec.add_development_dependency "pry"
 end
