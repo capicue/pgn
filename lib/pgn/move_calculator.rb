@@ -90,13 +90,12 @@ module PGN
     def initialize(board, move)
       self.board = board
       self.move  = move
+      self.origin = compute_origin
     end
 
     # @return [PGN::Board] the board after the move is made
     #
     def result_board
-      compute_origin
-
       new_board = self.board.dup
       new_board.change!(changes)
 
@@ -106,8 +105,6 @@ module PGN
     # @return [Array<String>] which castling moves are no longer available
     #
     def castling_restrictions
-      compute_origin
-
       restrict = case self.move.piece
       when "K" then "KQ"
       when "k" then "kq"
@@ -140,8 +137,6 @@ module PGN
     # @return [String, nil] the en passant square if applicable
     #
     def en_passant_square
-      compute_origin
-
       return nil if move.castle
 
       if self.move.pawn? && (self.origin[1].to_i - self.move.destination[1].to_i).abs == 2
@@ -154,8 +149,6 @@ module PGN
     private
 
     def changes
-      compute_origin
-
       changes = {}
       changes.merge!(CASTLING[self.move.castle]) if self.move.castle
       changes.merge!(
@@ -178,19 +171,17 @@ module PGN
     def compute_origin
       return nil if move.castle
 
-      @origin ||= begin
-        possibilities = case move.piece
-        when /[brq]/i then direction_origins
-        when /[kn]/i  then move_origins
-        when /p/i     then pawn_origins
-        end
-
-        if possibilities.length > 1
-          possibilities = disambiguate(possibilities)
-        end
-
-        self.board.position_for(possibilities.first)
+      possibilities = case move.piece
+      when /[brq]/i then direction_origins
+      when /[kn]/i  then move_origins
+      when /p/i     then pawn_origins
       end
+
+      if possibilities.length > 1
+        possibilities = disambiguate(possibilities)
+      end
+
+      self.board.position_for(possibilities.first)
     end
 
     # From the destination square, move in each direction stopping if we
