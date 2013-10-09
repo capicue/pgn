@@ -144,7 +144,7 @@ module PGN
     #   board.coordinates_for("e4") #=> [4, 3]
     #
     def coordinates_for(position)
-      file_chr, rank_chr = position.chars
+      file_chr, rank_chr = position.chars.to_a
       file = FILE_TO_INDEX[file_chr]
       rank = RANK_TO_INDEX[rank_chr]
       [file, rank]

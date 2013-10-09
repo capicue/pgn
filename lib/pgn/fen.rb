@@ -119,10 +119,10 @@ module PGN
       PGN::Position.new(
         self.board,
         player,
-        castling:   castling,
-        en_passant: en_passant,
-        halfmove:   self.halfmove.to_i,
-        fullmove:   self.fullmove.to_i,
+        castling,
+        en_passant,
+        self.halfmove.to_i,
+        self.fullmove.to_i,
       )
     end
 

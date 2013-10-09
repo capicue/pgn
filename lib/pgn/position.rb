@@ -43,10 +43,6 @@ module PGN
       PGN::Position.new(
         PGN::Board.start,
         PLAYERS.first,
-        castling: CASTLING,
-        en_passant: nil,
-        halfmove: 0,
-        fullmove: 0,
       )
     end
 
@@ -65,7 +61,7 @@ module PGN
     #     :white,
     #   )
     #
-    def initialize(board, player, castling: CASTLING, en_passant: nil, halfmove: 0, fullmove: 0)
+    def initialize(board, player, castling = CASTLING, en_passant = nil, halfmove = 0, fullmove = 0)
       self.board      = board
       self.player     = player
       self.castling   = castling
@@ -95,10 +91,10 @@ module PGN
       PGN::Position.new(
         calculator.result_board,
         self.next_player,
-        castling:   new_castling,
-        en_passant: calculator.en_passant_square,
-        halfmove:   new_halfmove,
-        fullmove:   new_fullmove,
+        new_castling,
+        calculator.en_passant_square,
+        new_halfmove,
+        new_fullmove,
       )
     end
 
