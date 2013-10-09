@@ -1,3 +1,5 @@
+require 'io/console'
+
 module PGN
   # {PGN::Game} holds all of the information about a game. It is either
   # the result of parsing a PGN file, or created by hand.
