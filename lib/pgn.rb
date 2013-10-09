@@ -8,6 +8,10 @@ require "pgn/position"
 require "pgn/version"
 
 module PGN
+
+  # @param pgn [String] a pgn representation of one or more chess games
+  # @return [Array<PGN::Game>] a list of games
+  #
   def self.parse(pgn)
     pgn.force_encoding(Encoding::ISO_8859_1)
 

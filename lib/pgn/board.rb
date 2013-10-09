@@ -1,5 +1,17 @@
 module PGN
+  # {PGN::Board} represents the squares of a chess board and the pieces on
+  # each square. It is responsible for translating between a human readable
+  # format (white queen's rook on the bottom left) and the obvious
+  # internal representation (white queen's rook is position [0,0]). It
+  # takes care of converting square names (e4) to actual locations, and
+  # can convert to unicode chess pieces for display purposes.
+  #
+  # @!attribute squares
+  #   @return [Array<Array<String>>] the pieces on the board
+  #
   class Board
+    # The starting, internal representation of a chess board
+    #
     START = [
       ["R", "P", "_", "_", "_", "_", "p", "r"],
       ["N", "P", "_", "_", "_", "_", "p", "n"],
@@ -35,6 +47,8 @@ module PGN
     }
     INDEX_TO_RANK = Hash[RANK_TO_INDEX.map(&:reverse)]
 
+    # algebraic to unicode piece lookup
+    #
     UNICODE_PIECES = {
       'k' => "\u{265A}",
       'q' => "\u{265B}",
@@ -53,14 +67,44 @@ module PGN
 
     attr_accessor :squares
 
+    # @return [PGN::Board] a board in the starting position
+    #
     def self.start
       PGN::Board.new(START)
     end
 
+    # @param squares [<Array<Array<String>>>] the squares of the board
+    # @example
+    #   PGN::Board.new(
+    #     [
+    #       ["R", "P", "_", "_", "_", "_", "p", "r"],
+    #       ["N", "P", "_", "_", "_", "_", "p", "n"],
+    #       ["B", "P", "_", "_", "_", "_", "p", "b"],
+    #       ["Q", "P", "_", "_", "_", "_", "p", "q"],
+    #       ["K", "P", "_", "_", "_", "_", "p", "k"],
+    #       ["B", "P", "_", "_", "_", "_", "p", "b"],
+    #       ["N", "P", "_", "_", "_", "_", "p", "n"],
+    #       ["R", "P", "_", "_", "_", "_", "p", "r"],
+    #     ]
+    #   )
+    #
     def initialize(squares)
       self.squares = squares
     end
 
+    # @overload at(str)
+    #   Looks up a piece based on the string representation of a square (e4)
+    #   @param str [String] the square in algebraic notation
+    # @overload at(file, rank)
+    #   Looks up a piece based on zero-indexed coordinates (4, 3)
+    #   @param file [Integer] the file the piece is on
+    #   @param rank [Integer] the rank the piece is on
+    # @return [String, nil] the piece on the square, or nil if it is
+    #   empty
+    # @example
+    #   board.at(4,3)  #=> "P"
+    #   board.at("e4") #=> "P"
+    #
     def at(*args)
       str = case args.length
       when 1
@@ -72,17 +116,35 @@ module PGN
       str == "_" ? nil : str
     end
 
+    # @param changes [Hash<String, <String, nil>>] changes to make to the board
+    # @return [self]
+    # @example
+    #   board.change!({"e2" => nil, "e4" => "P"})
+    #
     def change!(changes)
       changes.each do |square, piece|
         self.update(square, piece)
       end
+      self
     end
 
+    # @param square [String] the square in algebraic notation
+    # @param piece [String, nil] the piece to put on the square
+    # @return [self]
+    # @example
+    #   board.update("e4", "P")
+    #
     def update(square, piece)
       coords = coordinates_for(square)
       self.squares[coords[0]][coords[1]] = piece || "_"
+      self
     end
 
+    # @param position [String] the square in algebraic notation
+    # @return [Array<Integer>] the coordinates of the square
+    # @example
+    #   board.coordinates_for("e4") #=> [4, 3]
+    #
     def coordinates_for(position)
       file_chr, rank_chr = position.chars
       file = FILE_TO_INDEX[file_chr]
@@ -90,6 +152,11 @@ module PGN
       [file, rank]
     end
 
+    # @param coordinates [Array<Integer>] the coordinates of the square
+    # @return [String] the square in algebraic notation
+    # @example
+    #   board.position_for([4, 3]) #=> "e4"
+    #
     def position_for(coordinates)
       file, rank = coordinates
       file_chr = INDEX_TO_FILE[file]
@@ -97,12 +164,17 @@ module PGN
       [file_chr, rank_chr].join('')
     end
 
+    # @return [String] the board in human readable format with unicode
+    #   pieces
+    #
     def inspect
       self.squares.transpose.reverse.map do |row|
         row.map{|chr| UNICODE_PIECES[chr] }.join(' ')
       end.join("\n")
     end
 
+    # @return [PGN::Board] a copy of self with duplicated squares
+    #
     def dup
       PGN::Board.new(self.squares.map(&:dup))
     end

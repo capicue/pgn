@@ -1,18 +1,55 @@
 module PGN
-  # This class is responsible for translating between strings in
-  # Forsyth-Edwards notation and a representation of the board that is
-  # appropriate for making moves.
+  # {PGN::FEN} is responsible for translating between strings in FEN
+  # notation and an internal representation of the board.
+  #
+  # @see http://en.wikipedia.org/wiki/Forsyth-Edwards_Notation
+  #   Forsyth-Edwards notation
+  #
+  # @!attribute board
+  #   @return [PGN::Board] a {PGN::Board} object for the current board
+  #     state
+  #
+  # @!attribute active
+  #   @return ['w', 't'] the current player
+  #
+  # @!attribute castling
+  #   @return [String] the castling availability
+  #   @example
+  #     "Kq" # white can castle kingside and black queenside
+  #   @example
+  #     "-"  # no one can castle
+  #
+  # @!attribute en_passant
+  #   @return [String] the current en passant square
+  #   @example
+  #     "e3" # white just moved e2 -> e4
+  #     "-"  # no current en passant square
+  #
+  # @!attribute halfmove
+  #   @return [String] the halfmove clock
+  #   @note This is the number of halfmoves since the last pawn advance or capture
+  #
+  # @!attribute fullmove
+  #   @return [String] the fullmove counter
+  #   @note The number of full moves. This is incremented after black
+  #     plays.
   #
   class FEN
     # The FEN string representing the starting position in chess
+    #
     INITIAL = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
     attr_accessor :board, :active, :castling, :en_passant, :halfmove, :fullmove
 
+    # @return [PGN::FEN] a {PGN::FEN} object representing the starting
+    #   position
+    #
     def self.start
       PGN::FEN.new(INITIAL)
     end
 
+    # @return [PGN::FEN] a {PGN::FEN} object with the given attributes
+    #
     def self.from_attributes(attrs)
       fen = PGN::FEN.new
       attrs.each do |key, val|
@@ -21,12 +58,17 @@ module PGN
       fen
     end
 
-    # http://en.wikipedia.org/wiki/Forsyth-Edwards_Notation
-    #
-    # @param fen [String] a string in Forsyth-Edwards Notation
+    # @param fen_string [String] a string in Forsyth-Edwards Notation
     #
     def initialize(fen_string = nil)
-      self.fen_string = fen_string if fen_string
+      if fen_string
+        self.board_string,
+          self.active,
+          self.castling,
+          self.en_passant,
+          self.halfmove,
+          self.fullmove = fen_string.split
+      end
     end
 
     def en_passant=(val)
@@ -38,6 +80,8 @@ module PGN
     end
 
     # @param board_fen [String] the fen representation of the board
+    # @example
+    #   fen.board_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
     #
     def board_string=(board_fen)
       squares = board_fen.gsub(/\d/) {|match| "_" * match.to_i }
@@ -48,16 +92,11 @@ module PGN
       self.board = PGN::Board.new(squares)
     end
 
-    def fen_string=(str)
-      self.board_string,
-        self.active,
-        self.castling,
-        self.en_passant,
-        self.halfmove,
-        self.fullmove = str.split
-    end
-
-    def fen_string
+    # @return [String] the fen representation of the board
+    # @example
+    #   PGN::FEN.start.board_string #=> "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+    #
+    def board_string
       self.board
           .squares
           .transpose
@@ -67,6 +106,9 @@ module PGN
           .gsub(/_+/) {|match| match.length }
     end
 
+    # @return [PGN::Position] a {PGN::Position} representing the current
+    #   position
+    #
     def to_position
       player     = self.active == 'w' ? :white : :black
       castling   = self.castling.split('') - ['-']
@@ -82,6 +124,10 @@ module PGN
       )
     end
 
+    # @return [String] the FEN string
+    # @example
+    #   PGN::FEN.start.to_s #=> "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    #
     def to_s
       [
         self.fen_string,

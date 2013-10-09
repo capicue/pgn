@@ -1,6 +1,9 @@
 require 'whittle'
 
 module PGN
+  # {PGN::Parser} uses the whittle gem to parse pgn files based on their
+  # context free grammar.
+  #
   class Parser < Whittle::Parser
     rule(:wsp => /\s+/).skip!
 

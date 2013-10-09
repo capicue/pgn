@@ -1,4 +1,18 @@
 module PGN
+  # {PGN::MoveCalculator} is responsible for computing all of the ways that a
+  # specific move changes the current position. This includes which squares on
+  # the board need to be updated, new castling restrictions, the en passant
+  # square and whether to update fullmove and halfmove counters.
+  #
+  # @!attribute board
+  #   @return [PGN::Board] the current board
+  #
+  # @!attribute move
+  #   @return [PGN::Move] the current move
+  #
+  # @!attribute origin
+  #   @return [String, nil] the origin square in SAN
+  #
   class MoveCalculator
     # Specifies the movement of pieces who are allowed to move in a
     # given direction until they reach an obstacle or the end of the
@@ -21,6 +35,9 @@ module PGN
               [-2, -1], [ 2, -1], [-2,  1], [ 2,  1]],
     }
 
+    # Specifies possible pawn movements. It may seem backwards since it is
+    # used to compute the origin square and not the destination.
+    #
     PAWN_MOVES = {
       'P' => {
         capture: [[-1, -1], [ 1, -1]],
@@ -34,6 +51,8 @@ module PGN
       },
     }
 
+    # The squares to update for each possible castling move.
+    #
     CASTLING = {
       "Q" => {
         "a1" => nil,
@@ -65,11 +84,16 @@ module PGN
     attr_accessor :move
     attr_accessor :origin
 
+    # @param board [PGN::Board] the current board
+    # @param move [PGN::Move] the current move
+    #
     def initialize(board, move)
       self.board = board
       self.move  = move
     end
 
+    # @return [PGN::Board] the board after the move is made
+    #
     def result_board
       compute_origin
 
@@ -79,6 +103,8 @@ module PGN
       new_board
     end
 
+    # @return [Array<String>] which castling moves are no longer available
+    #
     def castling_restrictions
       compute_origin
 
@@ -99,14 +125,20 @@ module PGN
       restrict.split('')
     end
 
+    # @return [Boolean] whether to increment the halfmove clock
+    #
     def increment_halfmove?
       !(self.move.capture || self.move.pawn?)
     end
 
+    # @return [Boolean] whether to increment the fullmove counter
+    #
     def increment_fullmove?
       self.move.black?
     end
 
+    # @return [String, nil] the en passant square if applicable
+    #
     def en_passant_square
       compute_origin
 
