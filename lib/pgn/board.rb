@@ -13,14 +13,14 @@ module PGN
     # The starting, internal representation of a chess board
     #
     START = [
-      ["R", "P", "_", "_", "_", "_", "p", "r"],
-      ["N", "P", "_", "_", "_", "_", "p", "n"],
-      ["B", "P", "_", "_", "_", "_", "p", "b"],
-      ["Q", "P", "_", "_", "_", "_", "p", "q"],
-      ["K", "P", "_", "_", "_", "_", "p", "k"],
-      ["B", "P", "_", "_", "_", "_", "p", "b"],
-      ["N", "P", "_", "_", "_", "_", "p", "n"],
-      ["R", "P", "_", "_", "_", "_", "p", "r"],
+      ["R", "P", nil, nil, nil, nil, "p", "r"],
+      ["N", "P", nil, nil, nil, nil, "p", "n"],
+      ["B", "P", nil, nil, nil, nil, "p", "b"],
+      ["Q", "P", nil, nil, nil, nil, "p", "q"],
+      ["K", "P", nil, nil, nil, nil, "p", "k"],
+      ["B", "P", nil, nil, nil, nil, "p", "b"],
+      ["N", "P", nil, nil, nil, nil, "p", "n"],
+      ["R", "P", nil, nil, nil, nil, "p", "r"],
     ]
 
     FILE_TO_INDEX = {
@@ -62,7 +62,7 @@ module PGN
       'B' => "\u{2657}",
       'N' => "\u{2658}",
       'P' => "\u{2659}",
-      '_' => '_',
+      nil => '_',
     }
 
     attr_accessor :squares
@@ -77,14 +77,14 @@ module PGN
     # @example
     #   PGN::Board.new(
     #     [
-    #       ["R", "P", "_", "_", "_", "_", "p", "r"],
-    #       ["N", "P", "_", "_", "_", "_", "p", "n"],
-    #       ["B", "P", "_", "_", "_", "_", "p", "b"],
-    #       ["Q", "P", "_", "_", "_", "_", "p", "q"],
-    #       ["K", "P", "_", "_", "_", "_", "p", "k"],
-    #       ["B", "P", "_", "_", "_", "_", "p", "b"],
-    #       ["N", "P", "_", "_", "_", "_", "p", "n"],
-    #       ["R", "P", "_", "_", "_", "_", "p", "r"],
+    #       ["R", "P", nil, nil, nil, nil, "p", "r"],
+    #       ["N", "P", nil, nil, nil, nil, "p", "n"],
+    #       ["B", "P", nil, nil, nil, nil, "p", "b"],
+    #       ["Q", "P", nil, nil, nil, nil, "p", "q"],
+    #       ["K", "P", nil, nil, nil, nil, "p", "k"],
+    #       ["B", "P", nil, nil, nil, nil, "p", "b"],
+    #       ["N", "P", nil, nil, nil, nil, "p", "n"],
+    #       ["R", "P", nil, nil, nil, nil, "p", "r"],
     #     ]
     #   )
     #
@@ -106,14 +106,12 @@ module PGN
     #   board.at("e4") #=> "P"
     #
     def at(*args)
-      str = case args.length
+      case args.length
       when 1
         self.at(*coordinates_for(args.first))
       when 2
         self.squares[args[0]][args[1]]
       end
-
-      str == "_" ? nil : str
     end
 
     # @param changes [Hash<String, <String, nil>>] changes to make to the board
@@ -136,7 +134,7 @@ module PGN
     #
     def update(square, piece)
       coords = coordinates_for(square)
-      self.squares[coords[0]][coords[1]] = piece || "_"
+      self.squares[coords[0]][coords[1]] = piece
       self
     end
 

@@ -87,6 +87,7 @@ module PGN
       squares = board_fen.gsub(/\d/) {|match| "_" * match.to_i }
                          .split("/")
                          .map {|row| row.split('') }
+                         .map {|row| row.map {|e| e == "_" ? nil : e } }
                          .reverse
                          .transpose
       self.board = PGN::Board.new(squares)
@@ -101,6 +102,7 @@ module PGN
           .squares
           .transpose
           .reverse
+          .map {|row| row.map {|e| e.nil? ? "_" : e } }
           .map {|row| row.join }
           .join("/")
           .gsub(/_+/) {|match| match.length }
