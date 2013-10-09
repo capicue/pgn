@@ -9,7 +9,7 @@ A PGN parser and FEN generator for ruby.
 On the command line, it is easy to read in and play through chess games
 in [portable game notation](http://en.wikipedia.org/wiki/Portable_Game_Notation) format.
 
-```ruby
+```
 > games = PGN.parse(File.read("./examples/immortal_game.pgn"))
 > game  = games.first
 > game.play
@@ -41,7 +41,7 @@ forward. `^C` quits play mode.
 
 You can also access all of the information about a game.
 
-```ruby
+```
 > game.positions.last
 =>
 ♜ ＿ ♝ ♚ ＿ ＿ ＿ ♜
@@ -65,7 +65,7 @@ You can also access all of the information about a game.
 
 It is possible to create a game without parsing a pgn file.
 
-```ruby
+```
 moves = %w{e4 c5 c3 d5 exd5 Qxd5 d4 Nf6}
 game = PGN::Game.new(moves)
 ```
@@ -79,7 +79,7 @@ you can use `PGN::Parser.parse`.
 is a compact way to represent all of the information about a given chess
 position. It is easy to convert between FEN strings and chess positions.
 
-```ruby
+```
 > fen = PGN::FEN.start
 => rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 
