@@ -26,9 +26,9 @@ module PGN
   class Game
     attr_accessor :tags, :moves, :result
 
-    LEFT  = "a"
-    RIGHT = "d"
-    EXIT  = "\u{0003}"
+    LEFT  = %r{(a|\x1B\[D)\z}
+    RIGHT = %r{(d|\x1B\[C)\z}
+    EXIT  = %r{(q|\x03)\z}
 
     # @param moves [Array<String>] a list of moves in SAN
     # @param tags [Hash<String, String>] metadata about the game
@@ -67,10 +67,14 @@ module PGN
     #
     def play
       index = 0
+      hist = Array.new(3, "")
+
       loop do
         puts "\e[H\e[2J"
         puts self.positions[index].inspect
-        case STDIN.getch
+        hist[0..2] = (hist[1..2] << STDIN.getch)
+
+        case hist.join
         when LEFT
           index -= 1 if index > 0
         when RIGHT

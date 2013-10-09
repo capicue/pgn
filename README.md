@@ -15,8 +15,8 @@ in [portable game notation](http://en.wikipedia.org/wiki/Portable_Game_Notation)
 > game.play
 ```
 
-Play through the game using `a` to move backward and `d` to move
-forward. `^C` quits play mode.
+Play through the game using `a` or left arrow to move backward, and `d`
+or right arrow to move forward. `q` or `^C` quits play mode.
 
     ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
     ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
