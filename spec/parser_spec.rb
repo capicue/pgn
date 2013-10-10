@@ -11,4 +11,16 @@ describe PGN do
       game.moves.last.should == "Be7#"
     end
   end
+
+  context "alternate castling notation" do
+    describe "parsing a file" do
+      it "should return a list of games" do
+        games = PGN.parse(File.read("./spec/pgn_files/alternate_castling.pgn"))
+        game = games.first
+        game.tags["White"].should == "Somebody"
+        game.result.should == "*"
+        game.moves.last.should == "O-O-O"
+      end
+    end
+  end
 end

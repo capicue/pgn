@@ -40,6 +40,14 @@ module PGN
       self.result = result
     end
 
+    # @param moves [Array<String>] a list of moves in SAN
+    #
+    # Standardize castling moves to use O's instead of 0's
+    #
+    def moves=(moves)
+      @moves = moves.map {|m| m.gsub("0", "O") }
+    end
+
     # @return [Array<PGN::Position>] list of the {PGN::Position}s in the game
     #
     def positions
