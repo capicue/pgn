@@ -84,4 +84,11 @@ describe PGN::FEN do
       next_pos.to_fen.fullmove.should == "26"
     end
   end
+
+  describe "displaying FEN notation" do
+    it "should return a string on inspect" do
+      fen = PGN::FEN.start
+      fen.inspect.should be_a(String)
+    end
+  end
 end

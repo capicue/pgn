@@ -132,7 +132,7 @@ module PGN
     #
     def to_s
       [
-        self.fen_string,
+        self.board_string,
         self.active,
         self.castling,
         self.en_passant,
