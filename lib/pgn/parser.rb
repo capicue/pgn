@@ -50,7 +50,7 @@ module PGN
     rule(:element) do |r|
       r[:move_number_indication].as { nil }
       r[:san_move]
-      #r[:numeric_annotation_glyph]
+      r[:numeric_annotation_glyph].as { nil }
     end
 
     #rule(:recursive_variation) do |r|
@@ -112,7 +112,8 @@ module PGN
 
     rule(
       :numeric_annotation_glyph => %r{
-        \$\d+    # dollar sign followed by an integer from 0 to 255
+        \$\d+       | # dollar sign followed by an integer from 0 to 255
+        [\?!][\?!]? | # support the most used annotations directly
       }x
     )
   end
