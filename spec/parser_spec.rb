@@ -27,12 +27,22 @@ describe PGN do
   context "annotations" do
     describe "parsing a file" do
       it "should return a list of games" do
-        games = PGN.parse(File.read("./spec/pgn_files/fools_mate.pgn"))
+        games = PGN.parse(File.read("./spec/pgn_files/annotations.pgn"))
         games.each do |game|
           game.tags["White"].should == "Fool"
           game.result.should == "0-1"
           game.moves.last.should == "Qh4#"
         end
+      end
+    end
+
+    describe "parsing a file" do
+      it "should return a list of games" do
+        games = PGN.parse(File.read("./spec/pgn_files/comments.pgn"))
+        game = games.first
+        game.tags["White"].should == "Scholar"
+        game.result.should == "1-0"
+        game.moves.last.should == "Qxf7#"
       end
     end
   end

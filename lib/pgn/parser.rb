@@ -51,6 +51,7 @@ module PGN
       r[:move_number_indication].as { nil }
       r[:san_move]
       r[:numeric_annotation_glyph].as { nil }
+      r[:comment].as { nil }
     end
 
     #rule(:recursive_variation) do |r|
@@ -66,6 +67,18 @@ module PGN
           \\"                      # escaped quotation marks
         )*                         # zero or more of the above
         "                          # end of string
+      }x
+    )
+
+    rule(
+      :comment => %r{
+        \{                         # beginning of comment
+        (
+          [[:print:]&&[^\\\}]] |   # printing characters except closing brace and backslash
+          \\\\                 |   # escaped backslashes
+          \\\}|\\\}                # escaped braces
+        )*                         # zero or more of the above
+        \}                         # end of comment
       }x
     )
 
