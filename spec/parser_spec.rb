@@ -45,5 +45,15 @@ describe PGN do
         game.moves.last.should == "Qxf7#"
       end
     end
+
+    describe "parsing a file" do
+      it "should return a list of games" do
+        games = PGN.parse(File.read("./spec/pgn_files/variations.pgn"))
+        game = games.first
+        game.tags["Black"].should == "Petrov"
+        game.result.should == "*"
+        game.moves.last.should == "Nf6"
+      end
+    end
   end
 end
