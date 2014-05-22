@@ -85,6 +85,7 @@ module PGN
         \{                         # beginning of comment
         (
           [[:print:]&&[^\\\}]] |   # printing characters except closing brace and backslash
+          \n                   |
           \\\\                 |   # escaped backslashes
           \\\}|\\\}                # escaped braces
         )*                         # zero or more of the above
@@ -136,7 +137,7 @@ module PGN
     rule(
       :numeric_annotation_glyph => %r{
         \$\d+       | # dollar sign followed by an integer from 0 to 255
-        [\?!][\?!]? | # support the most used annotations directly
+        [\?!][\?!]?   # support the most used annotations directly
       }x
     )
   end
