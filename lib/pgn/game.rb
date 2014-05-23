@@ -1,6 +1,30 @@
 require 'io/console'
 
 module PGN
+  class MoveText
+    attr_accessor :notation, :variations
+    
+    def initialize(notation, variations = nil)
+      @notation = notation
+      @variations = variations
+    end
+    
+    def ==(m)
+      self.to_s == m.to_s
+    end
+    
+    def eql?(m)
+      self == m
+    end
+    
+    def hash
+      @notation.hash
+    end
+    
+    def to_s
+      @notation
+    end
+  end
   # {PGN::Game} holds all of the information about a game. It is either
   # the result of parsing a PGN file, or created by hand.
   #
@@ -45,7 +69,13 @@ module PGN
     # Standardize castling moves to use O's instead of 0's
     #
     def moves=(moves)
-      @moves = moves.map {|m| m.gsub("0", "O") }
+      @moves = moves.map do |m|
+        if m.is_a? String
+          MoveText.new(m.gsub("0", "O"))
+        else
+          MoveText.new(m.notation.gsub("0", "O"), m.variations)
+        end
+      end
     end
 
     # @return [Array<PGN::Position>] list of the {PGN::Position}s in the game
@@ -55,7 +85,7 @@ module PGN
         position = PGN::Position.start
         arr = [position]
         self.moves.each do |move|
-          new_pos = position.move(move)
+          new_pos = position.move(move.notation)
           arr << new_pos
           position = new_pos
         end

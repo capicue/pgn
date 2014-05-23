@@ -42,7 +42,6 @@ module PGN
 
     rule(:element_sequence) do |r|
       r[:element, :element_sequence].as {|element, sequence| element.nil? ? sequence : sequence << element }
-      r[:variation, :element_sequence].as {|_, sequence| sequence }
       r[].as { [] }
       #r[:recursive_variation, :element_sequence]
       #r[:recursive_variation]
@@ -50,19 +49,34 @@ module PGN
 
     rule(:element) do |r|
       r[:move_number_indication].as { nil }
-      r[:san_move]
-      r[:numeric_annotation_glyph].as { nil }
+      r[:san_move_annotated]
+      r[:san_move_annotated, :variation_list].as do |move, variations|
+        move.variations = variations
+        move
+      end
       r[:comment].as { nil }
     end
+    
+    rule(:san_move_annotated) do |r|
+      r[:san_move].as { |move| MoveText.new(move) }
+      r[:san_move, :comment].as { |move, _| MoveText.new(move) }
+      r[:san_move, :numeric_annotation_glyph].as { |move, _| MoveText.new(move) }
+      r[:san_move, :numeric_annotation_glyph, :comment].as { |move, _, _| MoveText.new(move) }
+    end
 
+    rule(:variation_list) do |r|
+        r[:variation, :variation_list].as { |variation, sequence| sequence << variation }
+        r[:variation].as { |v| [v] }
+    end
+    
     rule(:variation) do |r|
-      r["(", :variation_sequence, ")"]
+      r["(", :element_sequence, ")"].as { |_, sequence, _| sequence }
     end
 
-    rule(:variation_sequence) do |r|
-      r[:element, :variation_sequence]
-      r[].as { [] }
-    end
+#     rule(:variation_sequence) do |r|
+#       r[:element, :variation_sequence]
+#       r[].as { [] }
+#     end
 
     #rule(:recursive_variation) do |r|
       #r["(", :element_sequence, ")"]
