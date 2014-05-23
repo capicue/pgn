@@ -62,13 +62,14 @@ describe PGN do
         game = games.first
         game.tags["Black"].should == "Gelfand, Boris"
         game.result.should == "1-0"
-        game.moves[13] == "Nfd7"
-        game.moves[35] == "f3"
-        game.moves[35].annotation == "$6"
-        game.moves[35].comment == "{Gelfand\ndecide tomar medidas.}"
-        game.moves[35].variations[0].size == 1
+        game.moves[13].should == "Nfd7"
+        game.moves[34].should == "f3"
+        game.moves[35].annotation.should == "$6"
+        game.moves[35].comment.should == "{Gelfand\ndecide tomar medidas.}"
+        game.moves[35].variations.size.should == 1
         variation = game.moves[35].variations[0]
-        variation[0] == "Nxf3"
+        variation.size.should == 2
+        variation[0].should == "Nxf3"
       end
     end
   end
