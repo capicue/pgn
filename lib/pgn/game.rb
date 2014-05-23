@@ -2,10 +2,12 @@ require 'io/console'
 
 module PGN
   class MoveText
-    attr_accessor :notation, :variations
+    attr_accessor :notation, :annotation, :comment, :variations
     
-    def initialize(notation, variations = nil)
+    def initialize(notation, annotation = nil, comment = nil, variations = nil)
       @notation = notation
+      @annotation = annotation
+      @comment = comment
       @variations = variations
     end
     
@@ -73,7 +75,7 @@ module PGN
         if m.is_a? String
           MoveText.new(m.gsub("0", "O"))
         else
-          MoveText.new(m.notation.gsub("0", "O"), m.variations)
+          MoveText.new(m.notation.gsub("0", "O"), m.annotation, m.comment, m.variations)
         end
       end
     end

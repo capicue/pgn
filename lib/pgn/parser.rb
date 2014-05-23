@@ -59,9 +59,9 @@ module PGN
     
     rule(:san_move_annotated) do |r|
       r[:san_move].as { |move| MoveText.new(move) }
-      r[:san_move, :comment].as { |move, _| MoveText.new(move) }
-      r[:san_move, :numeric_annotation_glyph].as { |move, _| MoveText.new(move) }
-      r[:san_move, :numeric_annotation_glyph, :comment].as { |move, _, _| MoveText.new(move) }
+      r[:san_move, :comment].as { |move, comment| MoveText.new(move, nil, comment) }
+      r[:san_move, :numeric_annotation_glyph].as { |move, annotation| MoveText.new(move, annotation) }
+      r[:san_move, :numeric_annotation_glyph, :comment].as { |move, annotation, comment| MoveText.new(move, annotation, comment) }
     end
 
     rule(:variation_list) do |r|

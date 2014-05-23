@@ -55,5 +55,21 @@ describe PGN do
         game.moves.last.should == "Nf6"
       end
     end
+    
+    describe "parsing a complex file" do
+      it "should return a list of games" do
+        games = PGN.parse(File.read("./spec/pgn_files/test.pgn"))
+        game = games.first
+        game.tags["Black"].should == "Gelfand, Boris"
+        game.result.should == "1-0"
+        game.moves[13] == "Nfd7"
+        game.moves[35] == "f3"
+        game.moves[35].annotation == "$6"
+        game.moves[35].comment == "{Gelfand\ndecide tomar medidas.}"
+        game.moves[35].variations[0].size == 1
+        variation = game.moves[35].variations[0]
+        variation[0] == "Nxf3"
+      end
+    end
   end
 end
