@@ -37,8 +37,16 @@ describe PGN do
     end
 
     describe "parsing a file" do
-      it "should return a list of games" do
+      it "should work with comments" do
         games = PGN.parse(File.read("./spec/pgn_files/comments.pgn"))
+        game = games.first
+        game.tags["White"].should == "Scholar"
+        game.result.should == "1-0"
+        game.moves.last.should == "Qxf7#"
+      end
+
+      it "should work with multiline comments" do
+        games = PGN.parse(File.read("./spec/pgn_files/multiline_comments.pgn"))
         game = games.first
         game.tags["White"].should == "Scholar"
         game.result.should == "1-0"

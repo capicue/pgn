@@ -86,7 +86,8 @@ module PGN
         (
           [[:print:]&&[^\\\}]] |   # printing characters except closing brace and backslash
           \\\\                 |   # escaped backslashes
-          \\\}|\\\}                # escaped braces
+          \\\}|\\\}            |   # escaped braces
+          \n                       # newlines
         )*                         # zero or more of the above
         \}                         # end of comment
       }x
