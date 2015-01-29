@@ -1,4 +1,8 @@
 [White "Scholar"]
 [Black "Somebody else"]
 
-1. e4 e5 2. Qh5 Nc6 3. Bc4 Nf6 {I pity the fool!} 4. Qxf7# 1-0
+{ This is a multi-line commment, 
+where a comment spans in multiple lines. }
+
+1. e4 e5 2. Qh5 Nc6 3. {White about to move} Bc4 {White 
+moves} Nf6 {I pity the fool!} 4. Qxf7# 1-0

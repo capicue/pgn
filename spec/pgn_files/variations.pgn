@@ -1,4 +1,4 @@
 [White "Somebody"]
 [Black "Petrov"]
 
-1. e4 e5 2. Nf3 (2... Nc6 3. d4) (2... Nc6 3. Bb5 ) 2... Nf6 *
+1. e4 e5 2. Nf3 {comment} (2. Nc3 {other} d5 (2... f5) 3. exd5) (2. f4 exf4 {final variation}) 2... Nf6 *
