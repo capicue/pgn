@@ -9,5 +9,13 @@ describe PGN::Game do
       game = PGN::Game.new(moves, tags, result)
       lambda { game.positions }.should_not raise_error
     end
+
+    it "should have fullmove 2 after 1.e4 c5" do
+      moves = %w{e4 c5}
+      game = PGN::Game.new(moves)
+      last_pos = game.positions.last
+
+      last_pos.fullmove.should == 2
+    end
   end
 end

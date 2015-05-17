@@ -1,6 +1,16 @@
 require 'spec_helper'
 
 describe PGN::Position do
+
+  describe "start" do
+
+    it "should have fullmove 1" do
+      pos = PGN::Position.start
+      pos.fullmove.should == 1
+    end
+    
+  end
+  
   context "disambiguating moves" do
     describe "using SAN square disambiguation" do
       pos = PGN::FEN.new("r1bqkb1r/pp1p1ppp/2n1pn2/8/3NP3/2N5/PPP2PPP/R1BQKB1R w KQkq - 3 6").to_position
