@@ -116,6 +116,11 @@ module PGN
 
       restrict = "KQ" if ['K', 'Q'].include? move.castle
       restrict = "kq" if ['k', 'q'].include? move.castle
+      
+      restrict += 'Q' if self.move.destination == 'a1' && !restrict.include?('Q')
+      restrict += 'q' if self.move.destination == 'a8' && !restrict.include?('q')
+      restrict += 'K' if self.move.destination == 'h1' && !restrict.include?('K')
+      restrict += 'k' if self.move.destination == 'h8' && !restrict.include?('k')
 
       restrict ||= ''
 
