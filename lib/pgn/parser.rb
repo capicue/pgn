@@ -49,9 +49,34 @@ module PGN
 
     rule(:element) do |r|
       r[:move_number_indication].as { nil }
-      r[:san_move]
-      #r[:numeric_annotation_glyph]
+      r[:san_move_annotated]
+      r[:san_move_annotated, :variation_list].as do |move, variations|
+        move.variations = variations
+        move
+      end
+      r[:comment].as { nil }
     end
+    
+    rule(:san_move_annotated) do |r|
+      r[:san_move].as { |move| MoveText.new(move) }
+      r[:san_move, :comment].as { |move, comment| MoveText.new(move, nil, comment) }
+      r[:san_move, :numeric_annotation_glyph].as { |move, annotation| MoveText.new(move, annotation) }
+      r[:san_move, :numeric_annotation_glyph, :comment].as { |move, annotation, comment| MoveText.new(move, annotation, comment) }
+    end
+
+    rule(:variation_list) do |r|
+        r[:variation, :variation_list].as { |variation, sequence| sequence << variation }
+        r[:variation].as { |v| [v] }
+    end
+    
+    rule(:variation) do |r|
+      r["(", :element_sequence, ")"].as { |_, sequence, _| sequence }
+    end
+
+#     rule(:variation_sequence) do |r|
+#       r[:element, :variation_sequence]
+#       r[].as { [] }
+#     end
 
     #rule(:recursive_variation) do |r|
       #r["(", :element_sequence, ")"]
@@ -66,6 +91,20 @@ module PGN
           \\"                      # escaped quotation marks
         )*                         # zero or more of the above
         "                          # end of string
+      }x
+    )
+
+    rule(
+      :comment => %r{
+        \{                         # beginning of comment
+        (
+          [[:print:]&&[^\\\}]] |   # printing characters except closing brace and backslash
+          \n                   |
+          \\\\                 |   # escaped backslashes
+          \\\}|\\\}            |   # escaped braces
+          \n                       # newlines
+        )*                         # zero or more of the above
+        \}                         # end of comment
       }x
     )
 
@@ -112,7 +151,8 @@ module PGN
 
     rule(
       :numeric_annotation_glyph => %r{
-        \$\d+    # dollar sign followed by an integer from 0 to 255
+        \$\d+       | # dollar sign followed by an integer from 0 to 255
+        [\?!][\?!]?   # support the most used annotations directly
       }x
     )
   end
