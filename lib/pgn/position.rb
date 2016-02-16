@@ -61,7 +61,7 @@ module PGN
     #     :white,
     #   )
     #
-    def initialize(board, player, castling = CASTLING, en_passant = nil, halfmove = 0, fullmove = 0)
+    def initialize(board, player, castling = CASTLING, en_passant = nil, halfmove = 0, fullmove = 1)
       self.board      = board
       self.player     = player
       self.castling   = castling
