@@ -21,6 +21,12 @@ describe PGN::FEN do
       next_pos.to_fen.castling.should match(/q/)
     end
 
+    it "should remove one castling option when a rook is taken" do
+      pos = PGN::FEN.new("rn1qkbnr/pbpppppp/1p6/8/6P1/2N4P/PPPPPP2/R1BQKBNR b KQkq - 2 3").to_position
+      next_pos = pos.move("Bxh1")
+      next_pos.to_fen.castling.should_not match(/K/)
+    end
+
     it "should change to a hyphen once no side can castle" do
       pos = PGN::FEN.new("r1bq1rk1/pp1nbppp/3ppn2/8/2PP1N2/P1N5/1P2BPPP/R1BQK2R w KQ - 2 9").to_position
       pos.to_fen.castling.should_not == "-"

@@ -105,26 +105,31 @@ module PGN
     # @return [Array<String>] which castling moves are no longer available
     #
     def castling_restrictions
-      restrict = case self.move.piece
-      when "K" then "KQ"
-      when "k" then "kq"
-      when "R"
-        {"a1" => "Q", "h1" => "K"}[self.origin]
-      when "r"
-        {"a8" => "q", "h8" => "k"}[self.origin]
+      restrict = []
+
+      # when a king or rook is moved
+      case self.move.piece
+      when 'K'
+        restrict += ['K', 'Q']
+      when 'k'
+        restrict += ['k', 'q']
+      when 'R'
+        restrict << {'a1' => 'Q', 'h1' => 'K'}[self.origin]
+      when 'r'
+        restrict << {'a8' => 'q', 'h8' => 'k'}[self.origin]
       end
 
-      restrict = "KQ" if ['K', 'Q'].include? move.castle
-      restrict = "kq" if ['k', 'q'].include? move.castle
-      
-      restrict += 'Q' if self.move.destination == 'a1' && !restrict.include?('Q')
-      restrict += 'q' if self.move.destination == 'a8' && !restrict.include?('q')
-      restrict += 'K' if self.move.destination == 'h1' && !restrict.include?('K')
-      restrict += 'k' if self.move.destination == 'h8' && !restrict.include?('k')
+      # when castling occurs
+      restrict += ['K', 'Q'] if ['K', 'Q'].include? move.castle
+      restrict += ['k', 'q'] if ['k', 'q'].include? move.castle
 
-      restrict ||= ''
+      # when a rook is taken
+      restrict << 'Q' if self.move.destination == 'a1'
+      restrict << 'q' if self.move.destination == 'a8'
+      restrict << 'K' if self.move.destination == 'h1'
+      restrict << 'k' if self.move.destination == 'h8'
 
-      restrict.split('')
+      restrict.compact.uniq
     end
 
     # @return [Boolean] whether to increment the halfmove clock
