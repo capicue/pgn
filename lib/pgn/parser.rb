@@ -126,6 +126,7 @@ module PGN
     rule(
       :san_move => %r{
         (
+          --                           |    # "don't care" move (used in variations)
           [O0](-[O0]){1,2}             |    # castling (O-O, O-O-O)
           [a-h][1-8]                   |    # pawn moves (e4, d7)
           [BKNQR][a-h1-8]?x?[a-h][1-8] |    # major piece moves w/ optional specifier
