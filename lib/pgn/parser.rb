@@ -97,15 +97,18 @@ module PGN
 
     rule(
       :comment => %r{
-        \{                         # beginning of comment
         (
-          [[:print:]&&[^\\\}]] |   # printing characters except closing brace and backslash
-          \n                   |
-          \\\\                 |   # escaped backslashes
-          \\\}|\\\}            |   # escaped braces
-          \n                       # newlines
-        )*                         # zero or more of the above
-        \}                         # end of comment
+          \{                           # beginning of comment
+          (
+            [[:print:]&&[^\\\{\}]] |   # printing characters except brace and backslash
+            \n                     |
+            \\\\                   |   # escaped backslashes
+            \\\{|\\\}              |   # escaped braces
+            \n                     |   # newlines
+            \g<1>                      # recursive
+          )*                           # zero or more of the above
+          \}                           # end of comment
+        )
       }x
     )
 
