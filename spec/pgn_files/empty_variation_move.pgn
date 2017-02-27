@@ -1,0 +1,11 @@
+[White "Somebody"]
+[Black "Somebody Else"]
+
+1. d4 e6 2. c4 d5 3. Nc3 c6 4. Nf3 Nf6 5. Bg5 Nbd7 6. e3 Qa5 7. a3 (7. cxd5
+Nxd5 8. Rc1 {Analyzer's primary variation: 8... Bb4 9. Qd2 e5 10. e4 Nxc3 11.
+bxc3 Ba3 12. Rb1 h6 13. Be3 O-O 14. Bc4 exd4 15. cxd4 Qxd2+ 16. Nxd2 a5 17. O-O
+b5 18. Be2 Rd8 19. d5 cxd5 20. exd5 Nc5 21. Rxb5 Rxd5 {+0.30/21} }) 7... Ne4 8.
+Rc1 Nxg5 9. Nxg5 dxc4 10. Bxc4 Qxg5 11. O-O Nf6 12. Qf3 Qg4 13.  Qxg4 Nxg4 14.
+Ne4 Be7 15. b4 O-O 16. Rce1 Nf6 17. Ng5 ({Better is} 17. Nxf6+ gxf6 {-4.08/31}
+(17... Bxf6) (17... gxf6)) (17. Nxf6+) 17... h6 18. Nf3 Ne4 ({Treatening} 18...
+-- 19. Ra1 b5 {-4.05/31}) 19. Bd3 Ng5 *

@@ -1,0 +1,4 @@
+[White "Somebody"]
+[Black "Somebody Else"]
+
+1. e4 e5 2. Nf3 {this {is a} nested {comment}} 2... Nf6 *

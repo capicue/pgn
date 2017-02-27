@@ -44,12 +44,26 @@ describe PGN do
       game.moves.last.should == 'Qxf7#'
     end
 
+    it 'should handle nested comments' do
+      games = PGN.parse(File.read('./spec/pgn_files/nested_comments.pgn'))
+      game = games.first
+      game.result.should == '*'
+      game.moves.last.should == 'Nf6'
+    end
+
     it 'should handle variations' do
       games = PGN.parse(File.read('./spec/pgn_files/variations.pgn'))
       game = games.first
       game.tags['Black'].should == 'Petrov'
       game.result.should == '*'
       game.moves.last.should == 'Nf6'
+    end
+
+    it 'should handle empty variation moves' do
+      games = PGN.parse(File.read('./spec/pgn_files/empty_variation_move.pgn'))
+      game = games.first
+      game.result.should == '*'
+      game.moves.last.should == 'Ng5'
     end
 
     it 'should handle complex files' do
