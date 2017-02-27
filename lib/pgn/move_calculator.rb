@@ -170,7 +170,7 @@ module PGN
         changes[self.move.destination] = self.move.promotion
       end
 
-      changes.reject! {|key, _| key.nil? }
+      changes.reject! {|key, _| key.nil? or key.empty? }
 
       changes
     end

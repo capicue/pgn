@@ -62,6 +62,7 @@ module PGN
       r[:san_move, :comment].as { |move, comment| MoveText.new(move, nil, comment) }
       r[:san_move, :numeric_annotation_glyph].as { |move, annotation| MoveText.new(move, annotation) }
       r[:san_move, :numeric_annotation_glyph, :comment].as { |move, annotation, comment| MoveText.new(move, annotation, comment) }
+      r[:san_move, :comment, :numeric_annotation_glyph].as { |move, comment, annotation| MoveText.new(move, annotation, comment) }
     end
 
     rule(:variation_list) do |r|
@@ -96,15 +97,18 @@ module PGN
 
     rule(
       :comment => %r{
-        \{                         # beginning of comment
         (
-          [[:print:]&&[^\\\}]] |   # printing characters except closing brace and backslash
-          \n                   |
-          \\\\                 |   # escaped backslashes
-          \\\}|\\\}            |   # escaped braces
-          \n                       # newlines
-        )*                         # zero or more of the above
-        \}                         # end of comment
+          \{                           # beginning of comment
+          (
+            [[:print:]&&[^\\\{\}]] |   # printing characters except brace and backslash
+            \n                     |
+            \\\\                   |   # escaped backslashes
+            \\\{|\\\}              |   # escaped braces
+            \n                     |   # newlines
+            \g<1>                      # recursive
+          )*                           # zero or more of the above
+          \}                           # end of comment
+        )
       }x
     )
 
@@ -126,6 +130,7 @@ module PGN
     rule(
       :san_move => %r{
         (
+          --                           |    # "don't care" move (used in variations)
           [O0](-[O0]){1,2}             |    # castling (O-O, O-O-O)
           [a-h][1-8]                   |    # pawn moves (e4, d7)
           [BKNQR][a-h1-8]?x?[a-h][1-8] |    # major piece moves w/ optional specifier
