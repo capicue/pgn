@@ -80,5 +80,15 @@ describe PGN do
       variation.size.should == 2
       variation[0].should == 'Nxf3'
     end
+
+
+    it 'should handle files with starting position' do
+      games = PGN.parse(File.read('./spec/pgn_files/fen.pgn'))
+      game = games.first
+      first_pos = game.positions.first
+      last_pos = game.positions.last 
+      first_pos.to_fen.to_s.should == game.tags['FEN']
+      last_pos.to_fen.to_s.should == '5rkn/5p1p/2b2NpP/8/2B5/1P6/2PP3P/1K6 b - - 0 4'
+    end
   end
 end

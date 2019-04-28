@@ -1,0 +1,12 @@
+[Event "Event 1"]
+[Site "?"]
+[Date "????.??.??"]
+[Round "?"]
+[White "Walt Whiteman"]
+[Black "Simon Schwartz"]
+[Result "1-0"]
+[SetUp "1"]
+[FEN "4brkn/4bp1p/3q2pP/8/2B3N1/1P4N1/2PP3P/1K2Q3 w - - 0 1"]
+[PlyCount "7"]
+
+1. Qxe7 Qxe7 2. Ne4 Bc6 3. Nef6+ Qxf6 4. Nxf6# 1-0
