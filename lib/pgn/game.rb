@@ -80,11 +80,19 @@ module PGN
       end
     end
 
+    def starting_position
+      @starting_position ||= if fen = (self.tags && self.tags['FEN'])
+                               PGN::FEN.new(fen).to_position
+                             else 
+                               PGN::Position.start 
+                             end 
+    end 
+
     # @return [Array<PGN::Position>] list of the {PGN::Position}s in the game
     #
     def positions
       @positions ||= begin
-        position = PGN::Position.start
+        position = starting_position
         arr = [position]
         self.moves.each do |move|
           new_pos = position.move(move.notation)
