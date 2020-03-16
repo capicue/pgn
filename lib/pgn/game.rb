@@ -7,7 +7,7 @@ module PGN
     def initialize(notation, annotation = nil, comment = nil, variations = [])
       @notation = notation
       @annotation = annotation
-      @comment = comment
+      @comment = clean_text(comment)
       @variations = variations
     end
     
@@ -25,6 +25,10 @@ module PGN
     
     def to_s
       @notation
+    end
+
+    def clean_text(text)
+      text&.gsub(/{(.*)}/, '\1')&.gsub(/\s+/, ' ')&.strip
     end
   end
   # {PGN::Game} holds all of the information about a game. It is either

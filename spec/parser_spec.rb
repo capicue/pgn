@@ -93,7 +93,7 @@ describe PGN do
       game.moves[13].should == 'Nfd7'
       game.moves[34].should == 'f3'
       game.moves[35].annotation.should == '$6'
-      game.moves[35].comment.should == "{Gelfand\ndecide tomar medidas.}"
+      game.moves[35].comment.should == "Gelfand decide tomar medidas."
       game.moves[35].variations.size.should == 1
       variation = game.moves[35].variations[0]
       variation.size.should == 2
