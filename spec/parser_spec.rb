@@ -51,6 +51,13 @@ describe PGN do
       game.moves.last.should == 'Nf6'
     end
 
+
+    it 'returns empty array when no variations' do
+      games = PGN.parse(File.read('./spec/pgn_files/variations.pgn'))
+      game = games.first
+      game.moves.first.variations.should == []
+    end
+
     it 'should handle variations' do
       games = PGN.parse(File.read('./spec/pgn_files/variations.pgn'))
       game = games.first

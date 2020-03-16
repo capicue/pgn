@@ -4,7 +4,7 @@ module PGN
   class MoveText
     attr_accessor :notation, :annotation, :comment, :variations
     
-    def initialize(notation, annotation = nil, comment = nil, variations = nil)
+    def initialize(notation, annotation = nil, comment = nil, variations = [])
       @notation = notation
       @annotation = annotation
       @comment = comment
