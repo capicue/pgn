@@ -23,29 +23,11 @@ module PGN
       ["R", "P", nil, nil, nil, nil, "p", "r"],
     ]
 
-    FILE_TO_INDEX = {
-      'a' => 0,
-      'b' => 1,
-      'c' => 2,
-      'd' => 3,
-      'e' => 4,
-      'f' => 5,
-      'g' => 6,
-      'h' => 7,
-    }
-    INDEX_TO_FILE = Hash[FILE_TO_INDEX.map(&:reverse)]
+    FILE_TO_INDEX = ('a'..'h').each_with_index.to_h
+    INDEX_TO_FILE = FILE_TO_INDEX.map(&:reverse).to_h
 
-    RANK_TO_INDEX = {
-      '1' => 0,
-      '2' => 1,
-      '3' => 2,
-      '4' => 3,
-      '5' => 4,
-      '6' => 5,
-      '7' => 6,
-      '8' => 7,
-    }
-    INDEX_TO_RANK = Hash[RANK_TO_INDEX.map(&:reverse)]
+    RANK_TO_INDEX = ('1'..'8').each_with_index.to_h
+    INDEX_TO_RANK = RANK_TO_INDEX.map(&:reverse).to_h
 
     # algebraic to unicode piece lookup
     #
