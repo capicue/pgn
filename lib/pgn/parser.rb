@@ -39,11 +39,11 @@ module PGN
     end
 
     rule(:movetext_section) do |r|
-      r[:element_sequence, :game_termination].as { |a, b| a.reverse << b }
+      r[:element_sequence, :game_termination].as { |a, b| a << b }
     end
 
     rule(:element_sequence) do |r|
-      r[:element, :element_sequence].as do |element, sequence|
+      r[:element_sequence, :element].as do |sequence, element|
         element.nil? ? sequence : sequence << element
       end
       r[].as { [] }

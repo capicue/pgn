@@ -71,6 +71,13 @@ describe PGN do
       game.moves.last.should == 'Nf6'
     end
 
+    it 'should handle variations longer than 1' do
+      games = PGN.parse(File.read('./spec/pgn_files/variations.pgn'))
+      game = games.first
+      # puts game.moves.map{|x| x.variations.to_a.count }
+      game.moves[-2].variations.first.should == ['f4', 'exf4']
+    end
+
     it 'should handle empty variation moves' do
       games = PGN.parse(File.read('./spec/pgn_files/empty_variation_move.pgn'))
       game = games.first
@@ -90,7 +97,7 @@ describe PGN do
       game.moves[35].variations.size.should == 1
       variation = game.moves[35].variations[0]
       variation.size.should == 2
-      variation[0].should == 'Nxf3'
+      variation[0].should == 'exf3'
     end
 
 
