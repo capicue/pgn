@@ -28,6 +28,11 @@ describe PGN do
       end
     end
 
+    it 'should handle many games in order' do
+      games = PGN.parse(File.read('./spec/pgn_files/two_games.pgn'))
+      games.first.moves(&:notation).should == ['f3', 'e5', 'g4', 'Qh4#']
+    end
+
     it 'should handle comments' do
       games = PGN.parse(File.read('./spec/pgn_files/comments.pgn'))
       game = games.first

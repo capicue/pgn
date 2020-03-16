@@ -16,7 +16,7 @@ module PGN
 
     rule(:pgn_database) do |r|
       r[].as { [] }
-      r[:pgn_game, :pgn_database].as { |game, database| database << game }
+      r[:pgn_database, :pgn_game].as { |database, game| database << game }
     end
 
     rule(:pgn_game) do |r|
