@@ -56,6 +56,11 @@ describe PGN do
       game.moves.last.should == 'Nf6'
     end
 
+    it 'handles two annotations' do
+      games = PGN.parse(File.read('./spec/pgn_files/two_annotations.pgn'))
+      game = games.first
+      game.moves[1].annotation.should == ['$2', '$11']
+    end
 
     it 'returns empty array when no variations' do
       games = PGN.parse(File.read('./spec/pgn_files/variations.pgn'))
@@ -92,7 +97,7 @@ describe PGN do
       game.result.should == '1-0'
       game.moves[13].should == 'Nfd7'
       game.moves[34].should == 'f3'
-      game.moves[35].annotation.should == '$6'
+      game.moves[35].annotation.should == ['$6']
       game.moves[35].comment.should == "Gelfand decide tomar medidas."
       game.moves[35].variations.size.should == 1
       variation = game.moves[35].variations[0]

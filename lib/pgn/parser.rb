@@ -64,15 +64,22 @@ module PGN
       r[:san_move, :comment].as do |move, comment|
         MoveText.new(move, nil, comment)
       end
-      r[:san_move, :numeric_annotation_glyph].as do |move, annotation|
+      r[:san_move, :annotation_list].as do |move, annotation|
         MoveText.new(move, annotation)
       end
-      r[:san_move, :numeric_annotation_glyph, :comment].as do |move, annotation, comment|
+      r[:san_move, :annotation_list, :comment].as do |move, annotation, comment|
         MoveText.new(move, annotation, comment)
       end
-      r[:san_move, :comment, :numeric_annotation_glyph].as do |move, comment, annotation|
+      r[:san_move, :comment, :annotation_list].as do |move, comment, annotation|
         MoveText.new(move, annotation, comment)
       end
+    end
+
+    rule(:annotation_list) do |r|
+      r[:annotation_list, :numeric_annotation_glyph].as do |sequence, element|
+        element.nil? ? sequence : sequence << element
+      end
+      r[:numeric_annotation_glyph].as { |v| [v] }
     end
 
     rule(:variation_list) do |r|
