@@ -54,7 +54,8 @@ module PGN
   #     game.result #=> "1-0"
   #
   class Game
-    attr_accessor :tags, :moves, :result
+    attr_accessor :tags, :result
+    attr_reader :moves
 
     LEFT  = /(a|\x1B\[D)\z/.freeze
     RIGHT = /(d|\x1B\[C)\z/.freeze
@@ -84,9 +85,13 @@ module PGN
       end
     end
 
+    def initial_fen
+      tags && tags['FEN']
+    end
+
     def starting_position
-      @starting_position ||= if fen = (tags && tags['FEN'])
-                               PGN::FEN.new(fen).to_position
+      @starting_position ||= if initial_fen
+                               PGN::FEN.new(initial_fen).to_position
                              else
                                PGN::Position.start
                              end
