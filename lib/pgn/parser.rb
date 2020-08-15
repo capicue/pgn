@@ -13,11 +13,11 @@ module PGN
 
       until offset == ending
         next_token(input, offset, line).tap do |token|
-          @@pgn += token[:value]
           if !token.nil?
             token[:offset] = offset
             line, token[:line] = token[:line], line
             yield token unless token[:discarded]
+            @@pgn += token[:value]
             offset += token[:value].length
           else
             raise UnconsumedInputError,
