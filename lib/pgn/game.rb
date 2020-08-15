@@ -54,7 +54,7 @@ module PGN
   #     game.result #=> "1-0"
   #
   class Game
-    attr_accessor :tags, :result
+    attr_accessor :tags, :result, :pgn
     attr_reader :moves
 
     LEFT  = /(a|\x1B\[D)\z/.freeze
@@ -65,10 +65,11 @@ module PGN
     # @param tags [Hash<String, String>] metadata about the game
     # @param result [String] the outcome of the game
     #
-    def initialize(moves, tags = nil, result = nil)
+    def initialize(moves, tags = nil, result = nil, pgn = nil)
       self.moves  = moves
       self.tags   = tags
       self.result = result
+      self.pgn    = pgn
     end
 
     # @param moves [Array<String>] a list of moves in SAN

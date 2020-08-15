@@ -113,5 +113,11 @@ describe PGN do
       expect(first_pos.to_fen.to_s).to eq game.tags['FEN']
       expect(last_pos.to_fen.to_s).to eq '5rkn/5p1p/2b2NpP/8/2B5/1P6/2PP3P/1K6 b - - 0 4'
     end
+
+    it 'returns original game pgn' do
+      games = PGN.parse(File.read('./spec/pgn_files/fen.pgn'))
+      game = games.first
+      expect(game.pgn).to eq "[Event \"Event 1\"]\n[FEN \"4brkn/4bp1p/3q2pP/8/2B3N1/1P4N1/2PP3P/1K2Q3 w - - 0 1\"]\n[PlyCount \"7\"]\n\n1. Qxe7 Qxe7 2. Ne4 Bc6 3. Nef6+ Qxf6 4. Nxf6# 1-0"
+    end
   end
 end

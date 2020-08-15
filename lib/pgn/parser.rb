@@ -5,6 +5,31 @@ module PGN
   # context free grammar.
   #
   class Parser < Whittle::Parser
+    def lex(input)
+      line   = 1
+      offset = 0
+      ending = input.length
+      @@pgn ||= ''
+
+      until offset == ending
+        next_token(input, offset, line).tap do |token|
+          @@pgn += token[:value]
+          if !token.nil?
+            token[:offset] = offset
+            line, token[:line] = token[:line], line
+            yield token unless token[:discarded]
+            offset += token[:value].length
+          else
+            raise UnconsumedInputError,
+                  "Unmatched input #{input[offset..-1].inspect} on line #{line}"
+            # offset += 1
+          end
+        end
+      end
+
+      yield ({ name: :$end, line: line, value: nil, offset: offset })
+    end
+
     rule(wsp: /\s+/).skip!
 
     rule('[')
@@ -21,7 +46,9 @@ module PGN
 
     rule(:pgn_game) do |r|
       r[:tag_section, :movetext_section].as do |tags, moves|
-        { tags: tags, result: moves.pop, moves: moves }
+        old_pgn = @@pgn
+        @@pgn = ''
+        { tags: tags, result: moves.pop, moves: moves, pgn: old_pgn }
       end
     end
 
