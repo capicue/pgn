@@ -55,14 +55,14 @@ module PGN
   #     move1.castle #=> "O-O-O"
   #     move2.castle #=> "O-O"
   #
+
   class Move
     attr_accessor :san, :player
     attr_accessor :piece, :destination, :promotion, :check, :capture, :disambiguation, :castle
-
     # A regular expression for matching moves in standard algebraic
     # notation
     #
-    SAN_REGEX = %r{
+    SAN_REGEX = /
       (?<piece>          [BKNQR]      ){0}
       (?<destination>    [a-h][1-8]   ){0}
       (?<promotion>      =[BNQR]      ){0}
@@ -81,7 +81,7 @@ module PGN
       ){0}
 
       \A (\g<castle> | \g<normal>) \g<check>? \z
-    }x
+    /x.freeze
 
     # @param move [String] the move in SAN
     # @param player [Symbol] the player making the move
@@ -93,27 +93,24 @@ module PGN
       self.san    = move
 
       match = move.match(SAN_REGEX)
+      return  if match.nil?
 
       match.names.each do |name|
-        if self.respond_to?(name)
-          self.send("#{name}=", match[name])
-        end
+        send("#{name}=", match[name]) if respond_to?(name)
       end
     end
 
     def piece=(val)
-      return if san.match("O-O")
+      return if san.match('O-O')
 
-      val ||= "P"
-      @piece = self.black? ?
-        val.downcase :
-        val
+      val ||= 'P'
+      @piece = black? ? val.downcase : val
     end
 
     def promotion=(val)
       if val
-        val.downcase! if self.black?
-        @promotion = val.delete("=")
+        val.downcase! if black?
+        @promotion = val.delete('=')
       end
     end
 
@@ -122,46 +119,45 @@ module PGN
     end
 
     def disambiguation=(val)
-      @disambiguation = (val == "" ? nil : val)
+      @disambiguation = (val == '' ? nil : val)
     end
 
     def castle=(val)
       if val
-        @castle = "K" if val == "O-O"
-        @castle = "Q" if val == "O-O-O"
-        @castle.downcase! if self.black?
+        @castle = 'K' if val == 'O-O'
+        @castle = 'Q' if val == 'O-O-O'
+        @castle.downcase! if black?
       end
     end
 
     # @return [Boolean] whether the move results in check
     #
     def check?
-      self.check == "+"
+      check == '+'
     end
 
     # @return [Boolean] whether the move results in checkmate
     #
     def checkmate?
-      self.check == "#"
+      check == '#'
     end
 
     # @return [Boolean] whether it's white's turn
     #
     def white?
-      self.player == :white
+      player == :white
     end
 
     # @return [Boolean] whether it's black's turn
     #
     def black?
-      self.player == :black
+      player == :black
     end
 
     # @return [Boolean] whether the piece being moved is a pawn
     #
     def pawn?
-      ['P', 'p'].include?(self.piece)
+      %w[P p].include?(piece)
     end
-
   end
 end

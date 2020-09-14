@@ -1,14 +1,13 @@
-require "pgn/board"
-require "pgn/fen"
-require "pgn/game"
-require "pgn/move"
-require "pgn/move_calculator"
-require "pgn/parser"
-require "pgn/position"
-require "pgn/version"
+require 'pgn/board'
+require 'pgn/fen'
+require 'pgn/game'
+require 'pgn/move'
+require 'pgn/move_calculator'
+require 'pgn/parser'
+require 'pgn/position'
+require 'pgn/version'
 
 module PGN
-
   # @param pgn [String] a pgn representation of one or more chess games
   # @return [Array<PGN::Game>] a list of games
   #
@@ -21,7 +20,7 @@ module PGN
     pgn.force_encoding(encoding) if encoding
 
     PGN::Parser.new.parse(pgn).map do |game|
-      PGN::Game.new(game[:moves], game[:tags], game[:result])
+      PGN::Game.new(game[:moves], game[:tags], game[:result], game[:pgn], game[:comment])
     end
   end
 end

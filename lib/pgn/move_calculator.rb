@@ -19,66 +19,66 @@ module PGN
     # board.
     #
     DIRECTIONS = {
-      'b' => [[ 1,  1], [-1,  1], [-1, -1], [ 1, -1]],
-      'r' => [[-1,  0], [ 1,  0], [ 0, -1], [ 0,  1]],
-      'q' => [[ 1,  1], [-1,  1], [-1, -1], [ 1, -1],
-              [-1,  0], [ 1,  0], [ 0, -1], [ 0,  1]],
-    }
+      'b' => [[1, 1], [-1,  1], [-1, -1], [1, -1]],
+      'r' => [[-1, 0], [1,  0], [0, -1], [0,  1]],
+      'q' => [[1,  1], [-1,  1], [-1, -1], [1, -1],
+              [-1, 0], [1,  0], [0, -1], [0, 1]]
+    }.freeze
 
     # Specifies the movement of pieces that have a limited set of moves
     # they are allowed to make.
     #
     MOVES = {
-      'k' => [[-1, -1], [ 0, -1], [ 1, -1], [ 1,  0],
-              [ 1,  1], [ 0,  1], [-1,  1], [-1,  0]],
-      'n' => [[-1, -2], [-1,  2], [ 1, -2], [ 1,  2],
-              [-2, -1], [ 2, -1], [-2,  1], [ 2,  1]],
-    }
+      'k' => [[-1, -1], [0, -1], [1, -1], [1,  0],
+              [1,  1], [0,  1], [-1,  1], [-1, 0]],
+      'n' => [[-1, -2], [-1, 2], [1, -2], [1,  2],
+              [-2, -1], [2, -1], [-2, 1], [2,  1]]
+    }.freeze
 
     # Specifies possible pawn movements. It may seem backwards since it is
     # used to compute the origin square and not the destination.
     #
     PAWN_MOVES = {
       'P' => {
-        capture: [[-1, -1], [ 1, -1]],
-        normal:  [[ 0, -1]],
-        double:  [[ 0, -2]],
+        capture: [[-1, -1], [1, -1]],
+        normal: [[0, -1]],
+        double: [[0, -2]]
       },
       'p' => {
-        capture: [[-1,  1], [ 1,  1]],
-        normal:  [[ 0,  1]],
-        double:  [[ 0,  2]],
-      },
-    }
+        capture: [[-1, 1], [1, 1]],
+        normal: [[0,  1]],
+        double: [[0,  2]]
+      }
+    }.freeze
 
     # The squares to update for each possible castling move.
     #
     CASTLING = {
-      "Q" => {
-        "a1" => nil,
-        "c1" => "K",
-        "d1" => "R",
-        "e1" => nil,
+      'Q' => {
+        'a1' => nil,
+        'c1' => 'K',
+        'd1' => 'R',
+        'e1' => nil
       },
-      "K" => {
-        "e1" => nil,
-        "f1" => "R",
-        "g1" => "K",
-        "h1" => nil,
+      'K' => {
+        'e1' => nil,
+        'f1' => 'R',
+        'g1' => 'K',
+        'h1' => nil
       },
-      "q" => {
-        "a8" => nil,
-        "c8" => "k",
-        "d8" => "r",
-        "e8" => nil,
+      'q' => {
+        'a8' => nil,
+        'c8' => 'k',
+        'd8' => 'r',
+        'e8' => nil
       },
-      "k" => {
-        "e8" => nil,
-        "f8" => "r",
-        "g8" => "k",
-        "h8" => nil,
-      },
-    }
+      'k' => {
+        'e8' => nil,
+        'f8' => 'r',
+        'g8' => 'k',
+        'h8' => nil
+      }
+    }.freeze
 
     attr_accessor :board
     attr_accessor :move
@@ -96,7 +96,7 @@ module PGN
     # @return [PGN::Board] the board after the move is made
     #
     def result_board
-      new_board = self.board.dup
+      new_board = board.dup
       new_board.change!(changes)
 
       new_board
@@ -108,26 +108,26 @@ module PGN
       restrict = []
 
       # when a king or rook is moved
-      case self.move.piece
+      case move.piece
       when 'K'
-        restrict += ['K', 'Q']
+        restrict += %w[K Q]
       when 'k'
-        restrict += ['k', 'q']
+        restrict += %w[k q]
       when 'R'
-        restrict << {'a1' => 'Q', 'h1' => 'K'}[self.origin]
+        restrict << { 'a1' => 'Q', 'h1' => 'K' }[origin]
       when 'r'
-        restrict << {'a8' => 'q', 'h8' => 'k'}[self.origin]
+        restrict << { 'a8' => 'q', 'h8' => 'k' }[origin]
       end
 
       # when castling occurs
-      restrict += ['K', 'Q'] if ['K', 'Q'].include? move.castle
-      restrict += ['k', 'q'] if ['k', 'q'].include? move.castle
+      restrict += %w[K Q] if %w[K Q].include? move.castle
+      restrict += %w[k q] if %w[k q].include? move.castle
 
       # when a rook is taken
-      restrict << 'Q' if self.move.destination == 'a1'
-      restrict << 'q' if self.move.destination == 'a8'
-      restrict << 'K' if self.move.destination == 'h1'
-      restrict << 'k' if self.move.destination == 'h8'
+      restrict << 'Q' if move.destination == 'a1'
+      restrict << 'q' if move.destination == 'a8'
+      restrict << 'K' if move.destination == 'h1'
+      restrict << 'k' if move.destination == 'h8'
 
       restrict.compact.uniq
     end
@@ -135,13 +135,13 @@ module PGN
     # @return [Boolean] whether to increment the halfmove clock
     #
     def increment_halfmove?
-      !(self.move.capture || self.move.pawn?)
+      !(move.capture || move.pawn?)
     end
 
     # @return [Boolean] whether to increment the fullmove counter
     #
     def increment_fullmove?
-      self.move.black?
+      move.black?
     end
 
     # @return [String, nil] the en passant square if applicable
@@ -149,10 +149,12 @@ module PGN
     def en_passant_square
       return nil if move.castle
 
-      if self.move.pawn? && (self.origin[1].to_i - self.move.destination[1].to_i).abs == 2
-        self.move.white? ?
-          self.origin[0] + '3' :
-          self.origin[0] + '6'
+      if move.pawn? && (origin[1].to_i - move.destination[1].to_i).abs == 2
+        if move.white?
+          origin[0] + '3'
+        else
+          origin[0] + '6'
+end
       end
     end
 
@@ -160,17 +162,15 @@ module PGN
 
     def changes
       changes = {}
-      changes.merge!(CASTLING[self.move.castle]) if self.move.castle
+      changes.merge!(CASTLING[move.castle]) if move.castle
       changes.merge!(
-        self.origin           => nil,
-        self.move.destination => self.move.piece,
-        en_passant_capture    => nil,
+        origin => nil,
+        move.destination => move.piece,
+        en_passant_capture => nil
       )
-      if self.move.promotion
-        changes[self.move.destination] = self.move.promotion
-      end
+      changes[move.destination] = move.promotion if move.promotion
 
-      changes.reject! {|key, _| key.nil? or key.empty? }
+      changes.reject! { |key, _| key.nil? or key.empty? }
 
       changes
     end
@@ -182,16 +182,16 @@ module PGN
       return nil if move.castle
 
       possibilities = case move.piece
-      when /[brq]/i then direction_origins
-      when /[kn]/i  then move_origins
-      when /p/i     then pawn_origins
-      end
+                      when /[brq]/i then direction_origins
+                      when /[kn]/i  then move_origins
+                      when /p/i     then pawn_origins
+                      else # don't care move, used in variations
+                        return nil
+                      end
 
-      if possibilities.length > 1
-        possibilities = disambiguate(possibilities)
-      end
+      possibilities = disambiguate(possibilities) if possibilities.length > 1
 
-      self.board.position_for(possibilities.first)
+      board.position_for(possibilities.first)
     end
 
     # From the destination square, move in each direction stopping if we
@@ -205,7 +205,7 @@ module PGN
 
       directions.each do |dir|
         piece, square = first_piece(destination_coords, dir)
-        possibilities << square if piece == self.move.piece
+        possibilities << square if piece == move.piece
       end
 
       possibilities
@@ -224,9 +224,7 @@ module PGN
         f = file + i
         r = rank + j
 
-        if valid_square?(f, r) && self.board.at(f, r) == move.piece
-          possibilities << [f, r]
-        end
+        possibilities << [f, r] if valid_square?(f, r) && board.at(f, r) == move.piece
       end
 
       possibilities
@@ -237,11 +235,11 @@ module PGN
     #
     def pawn_origins
       _, rank     = destination_coords
-      double_rank = (rank == 3 && self.move.white?) || (rank == 4 && self.move.black?)
+      double_rank = (rank == 3 && move.white?) || (rank == 4 && move.black?)
 
-      pawn_moves = PAWN_MOVES[self.move.piece]
+      pawn_moves = PAWN_MOVES[move.piece]
 
-      moves = self.move.capture ? pawn_moves[:capture] : pawn_moves[:normal]
+      moves = move.capture ? pawn_moves[:capture] : pawn_moves[:normal]
       moves += pawn_moves[:double] if double_rank
 
       move_origins(moves)
@@ -258,31 +256,35 @@ module PGN
     # Try to disambiguate based on the standard algebraic notation.
     #
     def disambiguate_san(possibilities)
-      move.disambiguation ?
-        possibilities.select {|p| self.board.position_for(p).match(move.disambiguation) } :
+      if move.disambiguation
+        possibilities.select { |p| board.position_for(p).match(move.disambiguation) }
+      else
         possibilities
+end
     end
 
     # A pawn can't move two spaces if there is a pawn in front of it.
     #
     def disambiguate_pawns(possibilities)
-      self.move.piece.match(/p/i) && !self.move.capture ?
-        possibilities.reject {|p| self.board.position_for(p).match(/2|7/) } :
+      if move.piece.match(/p/i) && !move.capture
+        possibilities.reject { |p| board.position_for(p).match(/2|7/) }
+      else
         possibilities
+end
     end
 
     # A piece can't move if it would result in a discovered check.
     #
     def disambiguate_discovered_check(possibilities)
       DIRECTIONS.each do |attacking_piece, directions|
-        attacking_piece = attacking_piece.upcase if self.move.black?
+        attacking_piece = attacking_piece.upcase if move.black?
 
         directions.each do |dir|
           piece, square = first_piece(king_position, dir)
-          next unless piece == self.move.piece && possibilities.include?(square)
+          next unless piece == move.piece && possibilities.include?(square)
 
-          piece, _ = first_piece(square, dir)
-          possibilities.reject! {|p| p == square } if piece == attacking_piece
+          piece, = first_piece(square, dir)
+          possibilities.reject! { |p| p == square } if piece == attacking_piece
         end
       end
 
@@ -296,7 +298,7 @@ module PGN
       piece = nil
 
       while valid_square?(file += i, rank += j)
-        break if piece = self.board.at(file, rank)
+        break if piece = board.at(file, rank)
       end
 
       [piece, [file, rank]]
@@ -306,22 +308,18 @@ module PGN
     # destination square, it must be an en passant capture.
     #
     def en_passant_capture
-      return nil if self.move.castle
+      return nil if move.castle
 
-      if !self.board.at(self.move.destination) && self.move.capture
-        self.move.destination[0] + self.origin[1]
-      end
+      move.destination[0] + origin[1] if !board.at(move.destination) && move.capture
     end
 
     def king_position
-      king = self.move.white? ? 'K' : 'k'
+      king = move.white? ? 'K' : 'k'
 
       coords = nil
       0.upto(7) do |file|
         0.upto(7) do |rank|
-          if self.board.at(file, rank) == king
-            coords = [file, rank]
-          end
+          coords = [file, rank] if board.at(file, rank) == king
         end
       end
 
@@ -333,8 +331,7 @@ module PGN
     end
 
     def destination_coords
-      self.board.coordinates_for(self.move.destination)
+      board.coordinates_for(move.destination)
     end
-
   end
 end

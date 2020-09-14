@@ -5,7 +5,36 @@ module PGN
   # context free grammar.
   #
   class Parser < Whittle::Parser
+    def lex(input)
+      line   = 1
+      offset = 0
+      ending = input.length
+      @@pgn ||= ''
+      @@game_comment ||= nil
+
+      until offset == ending
+        next_token(input, offset, line).tap do |token|
+          if !token.nil?
+            token[:offset] = offset
+            line, token[:line] = token[:line], line
+            yield token unless token[:discarded]
+            @@pgn += token[:value]
+            offset += token[:value].length
+          else
+            raise Whittle::UnconsumedInputError,
+                  "Unmatched input #{input[offset..-1].inspect} on line #{line}"
+            # offset += 1
+          end
+        end
+      end
+
+      yield ({ name: :$end, line: line, value: nil, offset: offset })
+    end
+
     rule(wsp: /\s+/).skip!
+    rule(
+      pgn_comment: /\A% .*/x
+    ).skip!
 
     rule('[')
     rule(']')
@@ -16,12 +45,17 @@ module PGN
 
     rule(:pgn_database) do |r|
       r[].as { [] }
-      r[:pgn_game, :pgn_database].as { |game, database| database << game }
+      r[:pgn_comment, :pgn_database].as { |_title, db| db }
+      r[:pgn_database, :pgn_game].as { |database, game| database << game }
     end
 
     rule(:pgn_game) do |r|
       r[:tag_section, :movetext_section].as do |tags, moves|
-        { tags: tags, result: moves.pop, moves: moves }
+        old_pgn = @@pgn
+        @@pgn = ''
+        comment = @@game_comment
+        @@game_comment = nil
+        { tags: tags, result: moves.pop, moves: moves, pgn: old_pgn, comment: comment }
       end
     end
 
@@ -39,11 +73,11 @@ module PGN
     end
 
     rule(:movetext_section) do |r|
-      r[:element_sequence, :game_termination].as { |a, b| a.reverse << b }
+      r[:element_sequence, :game_termination].as { |a, b| a << b }
     end
 
     rule(:element_sequence) do |r|
-      r[:element, :element_sequence].as do |element, sequence|
+      r[:element_sequence, :element].as do |sequence, element|
         element.nil? ? sequence : sequence << element
       end
       r[].as { [] }
@@ -56,7 +90,7 @@ module PGN
         move.variations = variations
         move
       end
-      r[:comment].as { nil }
+      r[:comment].as { |c| @@game_comment = c; nil }
     end
 
     rule(:san_move_annotated) do |r|
@@ -64,15 +98,22 @@ module PGN
       r[:san_move, :comment].as do |move, comment|
         MoveText.new(move, nil, comment)
       end
-      r[:san_move, :numeric_annotation_glyph].as do |move, annotation|
+      r[:san_move, :annotation_list].as do |move, annotation|
         MoveText.new(move, annotation)
       end
-      r[:san_move, :numeric_annotation_glyph, :comment].as do |move, annotation, comment|
+      r[:san_move, :annotation_list, :comment].as do |move, annotation, comment|
         MoveText.new(move, annotation, comment)
       end
-      r[:san_move, :comment, :numeric_annotation_glyph].as do |move, comment, annotation|
+      r[:san_move, :comment, :annotation_list].as do |move, comment, annotation|
         MoveText.new(move, annotation, comment)
       end
+    end
+
+    rule(:annotation_list) do |r|
+      r[:annotation_list, :numeric_annotation_glyph].as do |sequence, element|
+        element.nil? ? sequence : sequence << element
+      end
+      r[:numeric_annotation_glyph].as { |v| [v] }
     end
 
     rule(:variation_list) do |r|
