@@ -9,19 +9,20 @@ module PGN
   # @!attribute squares
   #   @return [Array<Array<String>>] the pieces on the board
   #
+
   class Board
     # The starting, internal representation of a chess board
     #
     START = [
-      ["R", "P", nil, nil, nil, nil, "p", "r"],
-      ["N", "P", nil, nil, nil, nil, "p", "n"],
-      ["B", "P", nil, nil, nil, nil, "p", "b"],
-      ["Q", "P", nil, nil, nil, nil, "p", "q"],
-      ["K", "P", nil, nil, nil, nil, "p", "k"],
-      ["B", "P", nil, nil, nil, nil, "p", "b"],
-      ["N", "P", nil, nil, nil, nil, "p", "n"],
-      ["R", "P", nil, nil, nil, nil, "p", "r"],
-    ]
+      ['R', 'P', nil, nil, nil, nil, 'p', 'r'],
+      ['N', 'P', nil, nil, nil, nil, 'p', 'n'],
+      ['B', 'P', nil, nil, nil, nil, 'p', 'b'],
+      ['Q', 'P', nil, nil, nil, nil, 'p', 'q'],
+      ['K', 'P', nil, nil, nil, nil, 'p', 'k'],
+      ['B', 'P', nil, nil, nil, nil, 'p', 'b'],
+      ['N', 'P', nil, nil, nil, nil, 'p', 'n'],
+      ['R', 'P', nil, nil, nil, nil, 'p', 'r']
+    ].freeze
 
     FILE_TO_INDEX = ('a'..'h').each_with_index.to_h
     INDEX_TO_FILE = FILE_TO_INDEX.map(&:reverse).to_h
@@ -44,8 +45,8 @@ module PGN
       'B' => "\u{2657}",
       'N' => "\u{2658}",
       'P' => "\u{2659}",
-      nil => '_',
-    }
+      nil => '_'
+    }.freeze
 
     attr_accessor :squares
 
@@ -90,9 +91,9 @@ module PGN
     def at(*args)
       case args.length
       when 1
-        self.at(*coordinates_for(args.first))
+        at(*coordinates_for(args.first))
       when 2
-        self.squares[args[0]][args[1]]
+        squares[args[0]][args[1]]
       end
     end
 
@@ -103,7 +104,7 @@ module PGN
     #
     def change!(changes)
       changes.each do |square, piece|
-        self.update(square, piece)
+        update(square, piece)
       end
       self
     end
@@ -116,7 +117,7 @@ module PGN
     #
     def update(square, piece)
       coords = coordinates_for(square)
-      self.squares[coords[0]][coords[1]] = piece
+      squares[coords[0]][coords[1]] = piece
       self
     end
 
@@ -148,16 +149,15 @@ module PGN
     #   pieces
     #
     def inspect
-      self.squares.transpose.reverse.map do |row|
-        row.map{|chr| UNICODE_PIECES[chr] }.join(' ')
+      squares.transpose.reverse.map do |row|
+        row.map { |chr| UNICODE_PIECES[chr] }.join(' ')
       end.join("\n")
     end
 
     # @return [PGN::Board] a copy of self with duplicated squares
     #
     def dup
-      PGN::Board.new(self.squares.map(&:dup))
+      PGN::Board.new(squares.map(&:dup))
     end
-
   end
 end
