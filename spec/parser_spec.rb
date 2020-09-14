@@ -131,6 +131,7 @@ describe PGN do
       games = PGN.parse(File.read('./spec/pgn_files/no_moves.pgn'))
       game = games.first
       expect { game.positions }.not_to raise_error
+      expect(game.moves).not_to be_empty
     end
 
     it 'gets game comment' do

@@ -78,17 +78,14 @@ module PGN
     # Standardize castling moves to use O's instead of 0's
     #
     def moves=(moves)
-      @moves = if moves.count == 1 && moves[0].notation == '--'
-                 []
-               else
-                 moves.map do |m|
-                   if m.is_a? String
-                     MoveText.new(m.gsub('0', 'O'))
-                   else
-                     MoveText.new(m.notation.gsub('0', 'O'), m.annotation, m.comment, m.variations)
-                   end
-                 end
-               end
+      @moves =
+        moves.map do |m|
+          if m.is_a? String
+            MoveText.new(m.gsub('0', 'O'))
+          else
+            MoveText.new(m.notation.gsub('0', 'O'), m.annotation, m.comment, m.variations)
+          end
+        end
     end
 
     def initial_fen
