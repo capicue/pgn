@@ -125,5 +125,11 @@ describe PGN do
       game = games.last
       expect(game.pgn).to eq "[White \"Fool 2\"]\n[Black \"Somebody else 2\"]\n\n1. e4 e5 0-1\n"
     end
+
+    it 'parses empty game' do
+      games = PGN.parse(File.read('./spec/pgn_files/no_moves.pgn'))
+      game = games.last
+      expect { game.positions }.not_to raise_error
+    end
   end
 end

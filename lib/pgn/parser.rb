@@ -31,6 +31,9 @@ module PGN
     end
 
     rule(wsp: /\s+/).skip!
+    rule(
+      pgn_comment: /\A% .*/x
+    ).skip!
 
     rule('[')
     rule(']')
@@ -41,6 +44,7 @@ module PGN
 
     rule(:pgn_database) do |r|
       r[].as { [] }
+      r[:pgn_comment, :pgn_database].as { |_title, db| db }
       r[:pgn_database, :pgn_game].as { |database, game| database << game }
     end
 
