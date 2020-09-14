@@ -20,7 +20,7 @@ module PGN
             @@pgn += token[:value]
             offset += token[:value].length
           else
-            raise UnconsumedInputError,
+            raise Whittle::UnconsumedInputError,
                   "Unmatched input #{input[offset..-1].inspect} on line #{line}"
             # offset += 1
           end
