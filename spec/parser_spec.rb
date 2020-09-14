@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'pry'
 
 describe PGN do
   describe '.parse' do
@@ -128,8 +129,14 @@ describe PGN do
 
     it 'parses empty game' do
       games = PGN.parse(File.read('./spec/pgn_files/no_moves.pgn'))
-      game = games.last
+      game = games.first
       expect { game.positions }.not_to raise_error
+    end
+
+    it 'gets game comment' do
+      games = PGN.parse(File.read('./spec/pgn_files/no_moves.pgn'))
+      game = games.last
+      expect(game.comment).to eq('{game comment}')
     end
   end
 end

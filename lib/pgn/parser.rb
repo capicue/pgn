@@ -52,7 +52,8 @@ module PGN
       r[:tag_section, :movetext_section].as do |tags, moves|
         old_pgn = @@pgn
         @@pgn = ''
-        { tags: tags, result: moves.pop, moves: moves, pgn: old_pgn }
+        result = moves.pop
+        { tags: tags, result: result[:result], moves: moves, pgn: old_pgn, comment: result[:comment] }
       end
     end
 
@@ -70,7 +71,8 @@ module PGN
     end
 
     rule(:movetext_section) do |r|
-      r[:element_sequence, :game_termination].as { |a, b| a << b }
+      r[:element_sequence, :comment, :game_termination].as { |a, c, t| a << { result: t, comment: c } }
+      r[:element_sequence, :game_termination].as { |a, b| a << { result: b } }
     end
 
     rule(:element_sequence) do |r|

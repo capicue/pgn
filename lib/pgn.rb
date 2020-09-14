@@ -20,7 +20,7 @@ module PGN
     pgn.force_encoding(encoding) if encoding
 
     PGN::Parser.new.parse(pgn).map do |game|
-      PGN::Game.new(game[:moves], game[:tags], game[:result], game[:pgn])
+      PGN::Game.new(game[:moves], game[:tags], game[:result], game[:pgn], game[:comment])
     end
   end
 end
