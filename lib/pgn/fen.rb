@@ -38,7 +38,6 @@ module PGN
   #   @note The number of full moves. This is incremented after black
   #     plays.
   #
-
   class FEN
     # The FEN string representing the starting position in chess
     #

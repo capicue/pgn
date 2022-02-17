@@ -1,0 +1,23 @@
+[Event "?"]
+[Site "Some site"]
+[Date "2017.12.13"]
+[Round "?"]
+[White "Player #1"]
+[Black "Player #2"]
+[Result "1-0"]
+[ECO "D02"]
+[WhiteElo "2084"]
+[BlackElo "1898"]
+[Annotator "User #3"]
+[PlyCount "79"]
+[EventDate "2017.??.??"]
+[SourceVersionDate "2017.07.26"]
+[TimeControl "300"]
+
+1. d4 Nf6 2. Bf4 e6 3. e3 c5 4. c3 Nc6 5. Nf3 d5 6. Bb5 Bd6 7. Bxd6 Qxd6 8. O-O
+O-O 9. Nbd2 Ne7 10. Ne5 a6 11. Bd3 Ng6 12. f4 b5 13. Rf3 Bb7 14. Rh3 Ne4 15.
+Qh5 Nf6 16. Qf3 b4 17. Rf1 bxc3 18. bxc3 cxd4 19. cxd4 Qa3 20. Bxg6 fxg6 21.
+Nb3 Ne4 22. Qg4 Rf5 23. Nc5 {Effect of imagination in chess} Nxc5 24. Qh4 Rh5
+25. Qe7 Rxh3 26. dxc5 Qxe3+ 27. Kh1 h6 28. gxh3 Qe4+ 29. Kg1 d4 30. c6 Bxc6 31.
+Qxe6+ Kh7 32. Qxc6 Qe3+ 33. Kg2 Rf8 34. Qxg6+ Kh8 35. Nf7+ Kg8 36. Nxh6+ Kh8
+37. Nf7+ Kg8 38. Ng5 Rf6 39. Qe8+ Rf8 40. Qh5 1-0

@@ -1,0 +1,16 @@
+[Event "?"]
+[Site "?"]
+[Date "2017.09.05"]
+[Round "?"]
+[White "Player #1"]
+[Black "Player #2"]
+[Result "1-0"]
+[ECO "B31"]
+[BlackElo "2050"]
+[PlyCount "74"]
+[SourceVersionDate "2017.07.26"]
+
+1. e4 c5 2. Nf3 Nc6 3. Bb5 g6 4. O-O Bg7 5. Bxc6 dxc6 6. h3 e5 7. d3 Ne7 8. a3
+O-O 9. b4 cxb4 10. axb4 Qd6 11. Nbd2 Be6 12. Ng5 Rfd8 13. Nxe6 Qxe6 14. Nc4 f5 15. Qe2 fxe4 16. Qxe4 Nd5 17. Bd2 Nc7 18. Rae1 Rd5 19. f4 b5 20. Na5 Re8 21. f5
+gxf5 22. Qxf5 Qxf5 23. Rxf5 e4 24. Rxd5 cxd5 25. dxe4 dxe4 26. Nc6 a6 27. Be3
+Nd5 28. Bc5 Rc8 29. Rd1 Rxc6 30. Rxd5 Kf7 31. Kf2 Re6 32. Ke2 Rg6 33. g4 Re6 34. Rd7+ Kg6 35. Rd5 Re8 36. h4 Rc8 37. h5+ Kf7 1-0

@@ -124,9 +124,9 @@ module PGN
       restrict += PGN::CODE[:rulers][:white] if PGN::CODE[:rulers][:white].include? move.castle
 
       # when a rook is taken
-      restrict << PGN::CODE[:piece][:k]  if move.destination == 'h8'
+      restrict << PGN::CODE[:piece][:k] if move.destination == 'h8'
       restrict << PGN::CODE[:piece][:q] if move.destination == 'a8'
-      restrict << PGN::CODE[:piece][:K]  if move.destination == 'h1'
+      restrict << PGN::CODE[:piece][:K] if move.destination == 'h1'
       restrict << PGN::CODE[:piece][:Q] if move.destination == 'a1'
       restrict.compact.uniq
     end

@@ -1,35 +1,9 @@
 # frozen_string_literal: true
 
 require 'io/console'
+require_relative './move_text'
 
 module PGN
-  class MoveText
-    attr_accessor :notation, :annotation, :comment, :variations
-
-    def initialize(notation, annotation = nil, comment = nil, variations = nil)
-      @annotation = annotation
-      @comment = comment
-      @notation = notation
-      @variations = variations
-    end
-
-    def ==(other)
-      to_s == other.to_s
-    end
-
-    def eql?(other)
-      self == other
-    end
-
-    def hash
-      @notation.hash
-    end
-
-    def to_s
-      @notation
-    end
-  end
-
   # {PGN::Game} holds all of the information about a game. It is either
   # the result of parsing a PGN file, or created by hand.
   #
@@ -67,6 +41,27 @@ module PGN
       self.moves  = moves
       self.tags   = tags
       self.result = result
+    end
+
+    def black
+      tags['Black']
+    end
+
+    def white
+      tags['White']
+    end
+
+    def to_h
+      position_fens = positions.map(&:to_fen).map(&:to_s)
+      move_notations = moves.map(&:to_s)
+      {
+        black: black,
+        white: white,
+        result: result,
+        start_fen: position_fens.shift,
+        moves: move_notations,
+        position_fens: position_fens
+      }
     end
 
     # @param moves [Array<String>] a list of moves in SAN

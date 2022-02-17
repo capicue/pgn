@@ -91,5 +91,37 @@ describe PGN do
       expect(first_pos.to_fen.to_s).to eq game.tags['FEN']
       expect(last_pos.to_fen.to_s).to eq '5rkn/5p1p/2b2NpP/8/2B5/1P6/2PP3P/1K6 b - - 0 4'
     end
+
+    it 'should read sample one' do
+      games = PGN.parse(File.read('./spec/pgn_files/sample_one.pgn'))
+      game = games.first
+      expect(game.black).to eq 'Player #2'
+      expect(game.white).to eq 'Player #1'
+      expect(game.result).to eq '0-1'
+      expect(game.moves[11].to_s).to eq 'Be7'
+      expect(game.moves[34].to_s).to eq 'Bg5'
+      expect(game.moves[39].annotation).to eq $6
+      expect(game.moves[45].variations[0][0].comment).to eq "{\nalso considered this a bit}"
+      expect(game.moves[41].variations[0].length).to eq 2
+      variation = game.moves[45].variations[0]
+      expect(variation.size).to eq 1
+      expect(variation[0].to_s).to eq 'g6'
+    end
+
+    it 'should convert game to ruby Hash' do
+      games = PGN.parse(File.read('./spec/pgn_files/sample_one.pgn'))
+      hash = games.first.to_h
+      expect(hash.keys).to eq [:black, :white, :result, :start_fen, :moves, :position_fens]
+      expect(hash[:black]).to eq 'Player #2'
+      expect(hash[:white]).to eq 'Player #1'
+      expect(hash[:result]).to eq '0-1'
+      expect(hash[:start_fen]).to eq 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+      expect(hash[:position_fens].length).to eq 124
+      expect(hash[:moves].length).to eq 124
+      expect(hash[:moves].first).to eq 'e4'
+      expect(hash[:moves][10]).to eq 'Bb3'
+      expect(hash[:position_fens][0]).to eq 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
+      expect(hash[:position_fens][10]).to eq 'r1bqkb1r/2pp1ppp/p1n2n2/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQ1RK1 b kq - 1 6'
+    end
   end
 end
