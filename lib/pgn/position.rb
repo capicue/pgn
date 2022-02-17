@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PGN
   # {PGN::Position} encapsulates all of the information necessary to
   # completely understand a chess position. It can be turned into a FEN string
@@ -27,22 +29,15 @@ module PGN
   #   @return [Integer] the number of fullmoves made so far
   #
   class Position
-    PLAYERS  = [:white, :black]
-    CASTLING = %w{K Q k q}
-
-    attr_accessor :board
-    attr_accessor :player
-    attr_accessor :castling
-    attr_accessor :en_passant
-    attr_accessor :halfmove
-    attr_accessor :fullmove
+    CASTLING = PGN::CODE[:rulers][:white] + PGN::CODE[:rulers][:black]
+    attr_accessor :board, :player, :castling, :en_passant, :halfmove, :fullmove
 
     # @return [PGN::Position] the starting position of a chess game
     #
     def self.start
       PGN::Position.new(
         PGN::Board.start,
-        PLAYERS.first,
+        PGN::CODE[:players].first
       )
     end
 
@@ -63,12 +58,12 @@ module PGN
     #
     def initialize(board, player, castling = CASTLING, en_passant = nil, halfmove = 0, fullmove = 1)
       self.board      = board
-      self.player     = player
       self.castling   = castling
       self.en_passant = en_passant
-      self.halfmove   = halfmove
       self.fullmove   = fullmove
-    end 
+      self.halfmove   = halfmove
+      self.player     = player
+    end
 
     # @param str [String] the move to make in SAN
     # @return [PGN::Position] the resulting position
@@ -77,49 +72,44 @@ module PGN
     #   queens_pawn = PGN::Position.start.move("d4")
     #
     def move(str)
-      move       = PGN::Move.new(str, self.player)
-      calculator = PGN::MoveCalculator.new(self.board, move)
+      move       = PGN::Move.new(str, player)
+      calculator = PGN::MoveCalculator.new(board, move)
 
-      new_castling = self.castling - calculator.castling_restrictions
-      new_halfmove = calculator.increment_halfmove? ?
-        self.halfmove + 1 :
-        0
-      new_fullmove = calculator.increment_fullmove? ?
-        self.fullmove + 1 :
-        self.fullmove
+      new_castling = castling - calculator.castling_restrictions
+      new_halfmove = (calculator.increment_halfmove? ? (halfmove + 1) : 0)
+      new_fullmove = fullmove + (calculator.increment_fullmove? ? 1 : 0)
 
       PGN::Position.new(
         calculator.result_board,
-        self.next_player,
+        next_player,
         new_castling,
         calculator.en_passant_square,
         new_halfmove,
-        new_fullmove,
+        new_fullmove
       )
     end
 
     # @return [Symbol] the next player to move
     #
     def next_player
-      (PLAYERS - [self.player]).first
+      (PGN::CODE[:players] - [player]).first
     end
 
     def inspect
-      "\n" + self.board.inspect
+      "\n" + board.inspect
     end
 
     # @return [PGN::FEN] a {PGN::FEN} object representing the current position
     #
     def to_fen
       PGN::FEN.from_attributes(
-        board:      self.board,
-        active:     self.player == :white ? 'w' : 'b',
-        castling:   self.castling.join(''),
-        en_passant: self.en_passant,
-        halfmove:   self.halfmove.to_s,
-        fullmove:   self.fullmove.to_s,
+        board: board,
+        active: PGN::CODE[:color][player],
+        castling: castling.join,
+        en_passant: en_passant,
+        halfmove: halfmove.to_s,
+        fullmove: fullmove.to_s
       )
     end
-
   end
 end

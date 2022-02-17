@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require_relative './base'
+
 module PGN
   # {PGN::Move} knows how to parse a move string in standard algebraic
   # notation to extract all relevant information.
@@ -56,13 +60,12 @@ module PGN
   #     move2.castle #=> "O-O"
   #
   class Move
-    attr_accessor :san, :player
-    attr_accessor :piece, :destination, :promotion, :check, :capture, :disambiguation, :castle
+    attr_accessor :san, :player, :piece, :destination, :promotion, :check, :capture, :disambiguation, :castle
 
     # A regular expression for matching moves in standard algebraic
     # notation
     #
-    SAN_REGEX = %r{
+    SAN_REGEX = /
       (?<piece>          [BKNQR]      ){0}
       (?<destination>    [a-h][1-8]   ){0}
       (?<promotion>      =[BNQR]      ){0}
@@ -81,7 +84,7 @@ module PGN
       ){0}
 
       \A (\g<castle> | \g<normal>) \g<check>? \z
-    }x
+    /x
 
     # @param move [String] the move in SAN
     # @param player [Symbol] the player making the move
@@ -95,26 +98,18 @@ module PGN
       match = move.match(SAN_REGEX)
 
       match.names.each do |name|
-        if self.respond_to?(name)
-          self.send("#{name}=", match[name])
-        end
+        send("#{name}=", match[name]) if respond_to?(name)
       end
     end
 
     def piece=(val)
-      return if san.match("O-O")
+      return if san.match?(PGN::CODE[:castling][:kingside])
 
-      val ||= "P"
-      @piece = self.black? ?
-        val.downcase :
-        val
+      @piece = (val || 'P').send(black? ? :downcase : :itself)
     end
 
     def promotion=(val)
-      if val
-        val.downcase! if self.black?
-        @promotion = val.delete("=")
-      end
+      val && black? && @promotion = val.downcase.delete('=')
     end
 
     def capture=(val)
@@ -122,46 +117,46 @@ module PGN
     end
 
     def disambiguation=(val)
-      @disambiguation = (val == "" ? nil : val)
+      @disambiguation = (val.to_s.empty? ? nil : val)
     end
 
     def castle=(val)
-      if val
-        @castle = "K" if val == "O-O"
-        @castle = "Q" if val == "O-O-O"
-        @castle.downcase! if self.black?
-      end
+      return unless val
+
+      @castle = case val
+                when PGN::CODE[:castling][:kingside]  then PGN::CODE[:piece][:K]
+                when PGN::CODE[:castling][:queenside] then PGN::CODE[:piece][:Q]
+      end.send(black? ? :downcase : :itself)
     end
 
     # @return [Boolean] whether the move results in check
     #
     def check?
-      self.check == "+"
+      check == PGN::CODE[:check]
     end
 
     # @return [Boolean] whether the move results in checkmate
     #
     def checkmate?
-      self.check == "#"
+      check == PGN::CODE[:checkmate]
     end
 
     # @return [Boolean] whether it's white's turn
     #
     def white?
-      self.player == :white
+      player == :white
     end
 
     # @return [Boolean] whether it's black's turn
     #
     def black?
-      self.player == :black
+      player == :black
     end
 
     # @return [Boolean] whether the piece being moved is a pawn
     #
     def pawn?
-      ['P', 'p'].include?(self.piece)
+      PGN::CODE[:pawns].include? piece
     end
-
   end
 end

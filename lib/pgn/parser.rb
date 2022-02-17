@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'whittle'
 
 module PGN
@@ -103,7 +105,7 @@ module PGN
         (
           \{                           # beginning of comment
           (
-            [[:print:]&&[^\\\{\}]] |   # printing characters except brace and backslash
+            [[:print:]&&[^\\{}]] |   # printing characters except brace and backslash
             \n                     |
             \\\\                   |   # escaped backslashes
             \\\{|\\\}              |   # escaped braces
@@ -119,7 +121,7 @@ module PGN
       game_termination: %r{
         1-0       |    # white wins
         0-1       |    # black wins
-        1\/2-1\/2 |    # draw
+        1/2-1/2 |    # draw
         \*             # ?
       }x
     )
@@ -160,7 +162,7 @@ module PGN
     rule(
       numeric_annotation_glyph: /
         \$\d+       | # dollar sign followed by an integer from 0 to 255
-        [\?!][\?!]?   # support the most used annotations directly
+        [?!][?!]?   # support the most used annotations directly
       /x
     )
   end

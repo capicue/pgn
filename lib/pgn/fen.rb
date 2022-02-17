@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require_relative './base'
+
 module PGN
   # {PGN::FEN} is responsible for translating between strings in FEN
   # notation and an internal representation of the board.
@@ -34,49 +38,51 @@ module PGN
   #   @note The number of full moves. This is incremented after black
   #     plays.
   #
+
   class FEN
     # The FEN string representing the starting position in chess
     #
-    INITIAL = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-
+    START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
     attr_accessor :board, :active, :castling, :en_passant, :halfmove, :fullmove
 
-    # @return [PGN::FEN] a {PGN::FEN} object representing the starting
-    #   position
-    #
-    def self.start
-      PGN::FEN.new(INITIAL)
-    end
-
-    # @return [PGN::FEN] a {PGN::FEN} object with the given attributes
-    #
-    def self.from_attributes(attrs)
-      fen = PGN::FEN.new
-      attrs.each do |key, val|
-        fen.send("#{key}=", val)
+    class << self
+      # @return [PGN::FEN] a {PGN::FEN} object representing the starting
+      #   position
+      #
+      def start
+        PGN::FEN.new(START)
       end
-      fen
+
+      # @return [PGN::FEN] a {PGN::FEN} object with the given attributes
+      #
+      def from_attributes(attrs)
+        fen = PGN::FEN.new
+        attrs.each do |key, val|
+          fen.send("#{key}=", val)
+        end
+        fen
+      end
     end
 
     # @param fen_string [String] a string in Forsyth-Edwards Notation
     #
     def initialize(fen_string = nil)
-      if fen_string
-        self.board_string,
-          self.active,
-          self.castling,
-          self.en_passant,
-          self.halfmove,
-          self.fullmove = fen_string.split
-      end
+      return unless fen_string
+
+      self.board_string,
+      self.active,
+      self.castling,
+      self.en_passant,
+      self.halfmove,
+      self.fullmove = fen_string.split
     end
 
     def en_passant=(val)
-      @en_passant = val.nil? ? "-" : val
+      @en_passant = (val || '-')
     end
 
     def castling=(val)
-      @castling = (val.nil? || val.empty?) ? "-" : val
+      @castling = val.nil? || val.empty? ? '-' : val
     end
 
     # @param board_fen [String] the fen representation of the board
@@ -84,10 +90,10 @@ module PGN
     #   fen.board_string = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
     #
     def board_string=(board_fen)
-      squares = board_fen.gsub(/\d/) {|match| "_" * match.to_i }
-                         .split("/")
-                         .map {|row| row.split('') }
-                         .map {|row| row.map {|e| e == "_" ? nil : e } }
+      squares = board_fen.gsub(/\d/) { |match| '_' * match.to_i }
+                         .split('/')
+                         .map { |row| row.split('') }
+                         .map { |row| row.map { |e| e == '_' ? nil : e } }
                          .reverse
                          .transpose
       self.board = PGN::Board.new(squares)
@@ -98,31 +104,31 @@ module PGN
     #   PGN::FEN.start.board_string #=> "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
     #
     def board_string
-      self.board
-          .squares
-          .transpose
-          .reverse
-          .map {|row| row.map {|e| e.nil? ? "_" : e } }
-          .map {|row| row.join }
-          .join("/")
-          .gsub(/_+/) {|match| match.length }
+      board
+        .squares
+        .transpose
+        .reverse
+        .map { |row| row.map { |e| e.nil? ? '_' : e } }
+        .map(&:join)
+        .join('/')
+        .gsub(/_+/) { |match| match.length }
     end
 
     # @return [PGN::Position] a {PGN::Position} representing the current
     #   position
     #
     def to_position
-      player     = self.active == 'w' ? :white : :black
+      player     = active == PGN::CODE[:color][:white] ? :white : :black
       castling   = self.castling.split('') - ['-']
       en_passant = self.en_passant == '-' ? nil : en_passant
 
       PGN::Position.new(
-        self.board,
+        board,
         player,
         castling,
         en_passant,
-        self.halfmove.to_i,
-        self.fullmove.to_i,
+        halfmove.to_i,
+        fullmove.to_i
       )
     end
 
@@ -132,17 +138,17 @@ module PGN
     #
     def to_s
       [
-        self.board_string,
-        self.active,
-        self.castling,
-        self.en_passant,
-        self.halfmove,
-        self.fullmove,
-      ].join(" ")
+        board_string,
+        active,
+        castling,
+        en_passant,
+        halfmove,
+        fullmove
+      ].join(' ')
     end
 
     def inspect
-      self.to_s
+      to_s
     end
   end
 end

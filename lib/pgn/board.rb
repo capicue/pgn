@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+require_relative './base'
+
 module PGN
   # {PGN::Board} represents the squares of a chess board and the pieces on
   # each square. It is responsible for translating between a human readable
@@ -13,14 +17,14 @@ module PGN
     # The starting, internal representation of a chess board
     #
     START = [
-      ["R", "P", nil, nil, nil, nil, "p", "r"],
-      ["N", "P", nil, nil, nil, nil, "p", "n"],
-      ["B", "P", nil, nil, nil, nil, "p", "b"],
-      ["Q", "P", nil, nil, nil, nil, "p", "q"],
-      ["K", "P", nil, nil, nil, nil, "p", "k"],
-      ["B", "P", nil, nil, nil, nil, "p", "b"],
-      ["N", "P", nil, nil, nil, nil, "p", "n"],
-      ["R", "P", nil, nil, nil, nil, "p", "r"],
+      [PGN::CODE[:piece][:R], PGN::CODE[:piece][:P], nil, nil, nil, nil, PGN::CODE[:piece][:p], PGN::CODE[:piece][:r]],
+      [PGN::CODE[:piece][:N], PGN::CODE[:piece][:P], nil, nil, nil, nil, PGN::CODE[:piece][:p], PGN::CODE[:piece][:n]],
+      [PGN::CODE[:piece][:B], PGN::CODE[:piece][:P], nil, nil, nil, nil, PGN::CODE[:piece][:p], PGN::CODE[:piece][:b]],
+      [PGN::CODE[:piece][:Q], PGN::CODE[:piece][:P], nil, nil, nil, nil, PGN::CODE[:piece][:p], PGN::CODE[:piece][:q]],
+      [PGN::CODE[:piece][:K], PGN::CODE[:piece][:P], nil, nil, nil, nil, PGN::CODE[:piece][:p], PGN::CODE[:piece][:k]],
+      [PGN::CODE[:piece][:B], PGN::CODE[:piece][:P], nil, nil, nil, nil, PGN::CODE[:piece][:p], PGN::CODE[:piece][:b]],
+      [PGN::CODE[:piece][:N], PGN::CODE[:piece][:P], nil, nil, nil, nil, PGN::CODE[:piece][:p], PGN::CODE[:piece][:n]],
+      [PGN::CODE[:piece][:R], PGN::CODE[:piece][:P], nil, nil, nil, nil, PGN::CODE[:piece][:p], PGN::CODE[:piece][:r]]
     ]
 
     FILE_TO_INDEX = {
@@ -31,7 +35,7 @@ module PGN
       'e' => 4,
       'f' => 5,
       'g' => 6,
-      'h' => 7,
+      'h' => 7
     }
     INDEX_TO_FILE = Hash[FILE_TO_INDEX.map(&:reverse)]
 
@@ -43,28 +47,29 @@ module PGN
       '5' => 4,
       '6' => 5,
       '7' => 6,
-      '8' => 7,
+      '8' => 7
     }
     INDEX_TO_RANK = Hash[RANK_TO_INDEX.map(&:reverse)]
 
     # algebraic to unicode piece lookup
     #
     UNICODE_PIECES = {
-      'k' => "\u{265A}",
-      'q' => "\u{265B}",
-      'r' => "\u{265C}",
-      'b' => "\u{265D}",
-      'n' => "\u{265E}",
-      'p' => "\u{265F}",
-      'K' => "\u{2654}",
-      'Q' => "\u{2655}",
-      'R' => "\u{2656}",
-      'B' => "\u{2657}",
-      'N' => "\u{2658}",
-      'P' => "\u{2659}",
-      nil => '_',
+      # black
+      PGN::CODE[:piece][:k] => "\u{265A}",
+      PGN::CODE[:piece][:q] => "\u{265B}",
+      PGN::CODE[:piece][:r] => "\u{265C}",
+      PGN::CODE[:piece][:b] => "\u{265D}",
+      PGN::CODE[:piece][:n] => "\u{265E}",
+      PGN::CODE[:piece][:p] => "\u{265F}",
+      # white
+      PGN::CODE[:piece][:K] => "\u{2654}",
+      PGN::CODE[:piece][:Q] => "\u{2655}",
+      PGN::CODE[:piece][:R] => "\u{2656}",
+      PGN::CODE[:piece][:B] => "\u{2657}",
+      PGN::CODE[:piece][:N] => "\u{2658}",
+      PGN::CODE[:piece][:P] => "\u{2659}",
+      nil => '_'
     }
-
     attr_accessor :squares
 
     # @return [PGN::Board] a board in the starting position
@@ -108,9 +113,9 @@ module PGN
     def at(*args)
       case args.length
       when 1
-        self.at(*coordinates_for(args.first))
+        at(*coordinates_for(args.first))
       when 2
-        self.squares[args[0]][args[1]]
+        squares[args[0]][args[1]]
       end
     end
 
@@ -121,7 +126,7 @@ module PGN
     #
     def change!(changes)
       changes.each do |square, piece|
-        self.update(square, piece)
+        update(square, piece)
       end
       self
     end
@@ -134,7 +139,7 @@ module PGN
     #
     def update(square, piece)
       coords = coordinates_for(square)
-      self.squares[coords[0]][coords[1]] = piece
+      squares[coords[0]][coords[1]] = piece
       self
     end
 
@@ -159,23 +164,22 @@ module PGN
       file, rank = coordinates
       file_chr = INDEX_TO_FILE[file]
       rank_chr = INDEX_TO_RANK[rank]
-      [file_chr, rank_chr].join('')
+      [file_chr, rank_chr].join
     end
 
     # @return [String] the board in human readable format with unicode
     #   pieces
     #
     def inspect
-      self.squares.transpose.reverse.map do |row|
-        row.map{|chr| UNICODE_PIECES[chr] }.join(' ')
+      squares.transpose.reverse.map do |row|
+        row.map { |chr| UNICODE_PIECES[chr] }.join(' ')
       end.join("\n")
     end
 
     # @return [PGN::Board] a copy of self with duplicated squares
     #
     def dup
-      PGN::Board.new(self.squares.map(&:dup))
+      PGN::Board.new(squares.map(&:dup))
     end
-
   end
 end
