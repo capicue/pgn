@@ -105,7 +105,7 @@ module PGN
     def piece=(val)
       return if san.match?(PGN::CODE[:castling][:kingside])
 
-      @piece = (val || 'P').send(black? ? :downcase : :itself)
+      @piece = (val || PGN::CODE[:piece][:P]).send(black? ? :downcase : :itself)
     end
 
     def promotion=(val)
