@@ -71,7 +71,7 @@ module PGN
 
       # Event Site Date Round Black White Result FEN
       _hash = {}
-      PGN::TAGS.values.map { |tag| _hash[tag] = (tags[tag] || '??') }
+      PGN::TAGS.values.map { |tag| _hash[tag] = tags[tag] if tags[tag] }
       _hash.merge({
                  moves: _moves,
                  fens: _fens,

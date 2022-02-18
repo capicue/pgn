@@ -112,8 +112,7 @@ describe PGN do
       games = PGN.parse(File.read('./spec/pgn_files/sample_one.pgn'))
       game = games.first
       hash = game.to_h
-      expect(hash.keys).to include(*%w[Event Site Date Round White Black Result Annotator
-        PlyCount TimeControl Time Termination Mode FEN SetUp])
+      expect(hash.keys).to include(*%w[Event Site Date Round White Black Result])
       expect(game.black).to eq 'Player #2'
       expect(game.white).to eq 'Player #1'
       expect(game.result).to eq '0-1'
