@@ -43,25 +43,42 @@ module PGN
       self.result = result
     end
 
-    def black
-      tags['Black']
+    # define methods for each official tag (seven tag roster, optional tags)
+    # any additional tag, if given, can be fetched from `tags`
+    #
+    # `result` is already fetched from parser
+    # `fen` must be given or starting FEN
+    PGN::TAGS.reject { |e| %i[result fen].include? e }.each do |name, tag|
+      define_method name do
+        tags[tag]
+      end
     end
 
-    def white
-      tags['White']
+    def fen
+      tags['FEN'].nil? || tags['FEN'].empty? ? starting_position.to_fen : tags['FEN']
     end
 
+    # generate hash
+    #
     def to_h
-      position_fens = positions.map(&:to_fen).map(&:to_s)
-      move_notations = moves.map(&:to_s)
-      {
-        black: black,
-        white: white,
-        result: result,
-        start_fen: position_fens.shift,
-        moves: move_notations,
-        position_fens: position_fens
-      }
+      _fens = positions.map(&:to_fen).map(&:to_s)
+      _fen = _fens.shift
+      _moves = moves.map(&:to_s)
+      _moves_string = _moves
+                      .each_slice(2).to_a
+                      .each_with_index.map { |e, i| "#{i + 1}. #{e.join(' ')} " }
+                      .insert(-1, '*').join
+
+      # Event Site Date Round Black White Result FEN
+      _hash = {}
+      PGN::TAGS.values.map { |tag| _hash[tag] = (tags[tag] || '??') }
+      _hash.merge({
+                 moves: _moves,
+                 fens: _fens,
+                 moves_fens: _moves.zip(_fens),
+                 moves_string: _moves_string,
+                 tags: tags
+               })
     end
 
     # @param moves [Array<String>] a list of moves in SAN
@@ -79,7 +96,7 @@ module PGN
     end
 
     def starting_position
-      fen = (tags && tags['FEN'])
+      fen = (tags && tags['FEN'].to_s.strip != '' && tags['FEN'])
       @starting_position ||= (fen ? PGN::FEN.new(fen).to_position : PGN::Position.start)
     end
 

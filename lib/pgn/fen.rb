@@ -73,7 +73,7 @@ module PGN
       self.castling,
       self.en_passant,
       self.halfmove,
-      self.fullmove = fen_string.split
+      self.fullmove = fen_string.to_s.split
     end
 
     def en_passant=(val)
@@ -148,6 +148,17 @@ module PGN
 
     def inspect
       to_s
+    end
+
+    #
+    # == operator to compare this FEN with another object
+    #
+    # @param [Any] other ruby object
+    #
+    # @return [Boolean] True/False
+    #
+    def ==(other)
+      to_s == other.to_s
     end
   end
 end
