@@ -112,17 +112,18 @@ describe PGN do
       games = PGN.parse(File.read('./spec/pgn_files/sample_one.pgn'))
       game = games.first
       hash = game.to_h
-      expect(hash.keys).to include(*%w[Event Site Date Round White Black Result])
+      expect(hash.keys).to include(*%w[pgn tags movetext result moves fens moves_fens])
+      expect(hash["tags"]).to include(*%w[Event Site Date Round White Black Result])
       expect(game.black).to eq 'Player #2'
       expect(game.white).to eq 'Player #1'
       expect(game.result).to eq '0-1'
       expect(game.fen).to eq 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
-      expect(hash[:fens].length).to eq 124
-      expect(hash[:moves].length).to eq 124
-      expect(hash[:moves].first).to eq 'e4'
-      expect(hash[:moves][10]).to eq 'Bb3'
-      expect(hash[:fens][0]).to eq 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
-      expect(hash[:fens][10]).to eq 'r1bqkb1r/2pp1ppp/p1n2n2/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQ1RK1 b kq - 1 6'
+      expect(hash['fens'].length).to eq 124
+      expect(hash['moves'].length).to eq 124
+      expect(hash['moves'].first).to eq 'e4'
+      expect(hash['moves'][10]).to eq 'Bb3'
+      expect(hash['fens'][0]).to eq 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1'
+      expect(hash['fens'][10]).to eq 'r1bqkb1r/2pp1ppp/p1n2n2/1p2p3/4P3/1B3N2/PPPP1PPP/RNBQ1RK1 b kq - 1 6'
     end
   end
 end

@@ -48,37 +48,69 @@ module PGN
     #
     # `result` is already fetched from parser
     # `fen` must be given or starting FEN
+    #
     PGN::TAGS.reject { |e| %i[result fen].include? e }.each do |name, tag|
+      # define quick method to access tag
       define_method name do
         tags[tag]
       end
     end
 
+    #
+    # FEN either given in tags, or generates from the starting position
+    #
+    # @return [String] FEN string
+    #
     def fen
-      tags['FEN'].nil? || tags['FEN'].empty? ? starting_position.to_fen : tags['FEN']
+      (tags['FEN'].nil? || tags['FEN'].empty?) ? starting_position.to_fen : tags['FEN']
     end
 
-    # generate hash
+    #
+    # movetext: notation string part in PGN format (PGN sans tags)
+    #
+    # @return [String] 1. ... ... 2. ... ...
+    #
+    def movetext
+      notations # array of string notations
+        .each_slice(2).to_a # grouped in pairs
+        .each_with_index.map { |e, i| "#{i + 1}. #{e.join(' ')} " } # as string like "1. g4+ Kxg4"
+        .join # "1. g4+ Kxg4 2. Rxa2 ..." and so on
+        .strip # no extra space around
+    end
+
+    #
+    # moves notations
+    #
+    # @return [String:Array] ["g4+", "Kxg4", "Rxa2", ...]
+    #
+    def notations
+      moves.map(&:notation)
+    end
+
+    #
+    # full PGN with headers, steps and result
+    #
+    # @return [String] full PGN format
+    #
+    def to_pgn
+      [
+        tags.map { |tag, value| "[#{tag} \"#{value.tr('"', "'")}\"]" }.join("\n"),
+        "#{movetext} #{result || '*'}"
+      ].join("\n")
+    end
+
+    # to ruby hash
     #
     def to_h
-      _fens = positions.map(&:to_fen).map(&:to_s)
-      _fen = _fens.shift
-      _moves = moves.map(&:to_s)
-      _moves_string = _moves
-                      .each_slice(2).to_a
-                      .each_with_index.map { |e, i| "#{i + 1}. #{e.join(' ')} " }
-                      .insert(-1, '*').join
-
-      # Event Site Date Round Black White Result FEN
-      _hash = {}
-      PGN::TAGS.values.map { |tag| _hash[tag] = tags[tag] if tags[tag] }
-      _hash.merge({
-                 moves: _moves,
-                 fens: _fens,
-                 moves_fens: _moves.zip(_fens),
-                 moves_string: _moves_string,
-                 tags: tags
-               })
+      {
+        'pgn'        => to_pgn,
+        'tags'       => tags,
+        'movetext'   => movetext,
+        'result'     => result,
+        'moves'      => notations,
+        'fens'       => fen_list[1..-1],
+        'moves_fens' => notations.zip(fen_list[1..-1])
+      }
     end
 
     # @param moves [Array<String>] a list of moves in SAN
@@ -105,10 +137,10 @@ module PGN
     def positions
       @positions ||= begin
         position = starting_position
-        arr = [position]
+        arr      = [position]
         moves.each do |move|
-          new_pos = position.move(move.notation)
-          arr << new_pos
+          new_pos  = position.move(move.notation)
+          arr     << new_pos
           position = new_pos
         end
         arr
