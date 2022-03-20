@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'whittle'
 
 module PGN
@@ -103,7 +105,7 @@ module PGN
         (
           \{                           # beginning of comment
           (
-            [[:print:]&&[^\\\{\}]] |   # printing characters except brace and backslash
+            [[:print:]&&[^\\{\}]] |   # printing characters except brace and backslash
             \n                     |
             \\\\                   |   # escaped backslashes
             \\\{|\\\}              |   # escaped braces

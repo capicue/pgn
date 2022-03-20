@@ -1,0 +1,34 @@
+[Event "Some event somewhere"]
+[Site "?"]
+[Date "2017.09.05"]
+[Round "?"]
+[White "Player #1"]
+[Black "Player #2"]
+[Result "0-1"]
+[ECO "C95"]
+[Annotator "Player #2"]
+[PlyCount "124"]
+[SourceVersionDate "2017.07.26"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O b5 6. Bb3 Be7 7. Re1 O-O 8. h3
+d6 9. c3 Nb8 10. d4 Nbd7 11. Nbd2 Bb7 12. a4 c5 13. Bc2 Qc7 14. Nf1 Rfe8 15.
+Ng3 Bf8 16. d5 c4 17. Nf5 {I was thinking about Kh8, Ng8 and g6 or h6/Kh7/g6
+but then thought why go so defensive when there are no threats} Nc5 18. Bg5
+Nfd7 19. Nd2 $6 (19. Nh2 {idea Ng4 might be better}) 19... f6 20. Be3 Nb6 21.
+a5 Nc8 {x a5} (21... Nba4 22. Nxc4 $16) 22. Qg4 Kh8 23. h4 Ne7 (23... g6 {
+also considered this a bit}) 24. Nxe7 Bxe7 25. h5 Bc8 26. Qf3 Bd7 27. Nf1 Qc8
+28. Bxc5 Qxc5 29. Ng3 g6 30. Qe3 Qxe3 31. Rxe3 $17 Kg7 32. Ne2 Bg4 $6 {losing
+way/ drifting. f5 should have been played. As usual i saw but let it go. Have
+to work on this facet in training} (32... f5 {I was worried it will give some
+life to opponents pieces, but I have the two bishops and the pawn front and
+would have been a clearer way to advantage.  Suddenly in some moments I go
+defensive for no reason.} 33. f4 {was worried about this , could not see
+anything clear} exf4 34. Nxf4 Bg5 35. g3 Re5 (35... fxe4 36. Rae1) 36. Rae1
+Rae8 37. Kf2 fxe4 38. Rxe4 Rxe4 39. Rxe4 Rxe4 40. Bxe4) 33. f3 Bd7 34. f4 Bg4
+35. hxg6 hxg6 36. f5 gxf5 37. exf5 Bxe2 {I knew the black bishop will be
+superior and white has all queenside pawns on dark squares} 38. Rxe2 Rh8 39.
+Re4 Kf7 40. Rg4 Rac8 {preventing some b3 idea} 41. Kf2 Bf8 42. Kf3 Rh5 $1 43.
+Rg1 Bh6 44. g3 Bg5 45. Be4 Rh2 (45... Rch8 46. Rg2) 46. Rg2 Rch8 47. Kf2 Bc1
+48. b3 cxb3 49. Bd3 Rxg2+ 50. Kxg2 Rc8 51. c4 b4 52. c5 dxc5 53. Bc4 Bg5 54.
+Bxb3 Ke7 $19 55. Rc4 Kd6 56. Re4 Rb8 57. Rc4 Rb5 58. Rc2 Rxa5 59. Ra2 Rxa2+ 60.
+Bxa2 a5 61. Bb3 a4 62. Bxa4 Kxd5 0-1
