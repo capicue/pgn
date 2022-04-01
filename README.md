@@ -1,5 +1,6 @@
-# PGN
+# PGN2
 
+This is a fork from [pgn](https://github.com/capicue/pgn) gem.
 A PGN parser and FEN generator for ruby.
 
 ## Usage
@@ -103,7 +104,7 @@ _ _ _ ♙ _ _ _ _
 
 Add this line to your application's Gemfile:
 
-    gem 'pgn'
+    gem 'pgn2'
 
 And then execute:
 
@@ -111,7 +112,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install pgn
+    $ gem install pgn2
 
 ## Contributing
 
