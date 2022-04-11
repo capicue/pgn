@@ -1,0 +1,18 @@
+% BOOKTITLE = book title
+[Event "?"]
+[Date "????.??.??"]
+[Result "*"]
+[Annotator "Mumu"]
+[PlyCount "1"]
+
+1. -- {Trying to make a long comments in an empty game.it 
+goes in two lines } (1.
+-- {Just putting something here too.}) *
+
+[Event "?"]
+[Date "????.??.??"]
+[Result "*"]
+[Annotator "Mumu"]
+[PlyCount "1"]
+
+{game comment} *

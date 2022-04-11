@@ -26,9 +26,10 @@ module PGN
   # @!attribute fullmove
   #   @return [Integer] the number of fullmoves made so far
   #
+
   class Position
-    PLAYERS  = [:white, :black]
-    CASTLING = %w{K Q k q}
+    PLAYERS  = %i[white black].freeze
+    CASTLING = %w[K Q k q].freeze
 
     attr_accessor :board
     attr_accessor :player
@@ -42,7 +43,7 @@ module PGN
     def self.start
       PGN::Position.new(
         PGN::Board.start,
-        PLAYERS.first,
+        PLAYERS.first
       )
     end
 
@@ -68,7 +69,7 @@ module PGN
       self.en_passant = en_passant
       self.halfmove   = halfmove
       self.fullmove   = fullmove
-    end 
+    end
 
     # @param str [String] the move to make in SAN
     # @return [PGN::Position] the resulting position
@@ -77,49 +78,52 @@ module PGN
     #   queens_pawn = PGN::Position.start.move("d4")
     #
     def move(str)
-      move       = PGN::Move.new(str, self.player)
-      calculator = PGN::MoveCalculator.new(self.board, move)
+      move       = PGN::Move.new(str, player)
+      calculator = PGN::MoveCalculator.new(board, move)
 
-      new_castling = self.castling - calculator.castling_restrictions
-      new_halfmove = calculator.increment_halfmove? ?
-        self.halfmove + 1 :
-        0
-      new_fullmove = calculator.increment_fullmove? ?
-        self.fullmove + 1 :
-        self.fullmove
-
+      new_castling = castling - calculator.castling_restrictions
+      new_halfmove = if calculator.increment_halfmove?
+                       halfmove + 1
+                     else
+                       0
+                     end
+      new_fullmove = if calculator.increment_fullmove?
+                       fullmove + 1
+                     else
+                       fullmove
+                     end
+      no_move = str == '--'
       PGN::Position.new(
-        calculator.result_board,
-        self.next_player,
+        no_move ? board : calculator.result_board,
+        next_player,
         new_castling,
         calculator.en_passant_square,
         new_halfmove,
-        new_fullmove,
+        new_fullmove
       )
     end
 
     # @return [Symbol] the next player to move
     #
     def next_player
-      (PLAYERS - [self.player]).first
+      (PLAYERS - [player]).first
     end
 
     def inspect
-      "\n" + self.board.inspect
+      "\n" + board.inspect
     end
 
     # @return [PGN::FEN] a {PGN::FEN} object representing the current position
     #
     def to_fen
       PGN::FEN.from_attributes(
-        board:      self.board,
-        active:     self.player == :white ? 'w' : 'b',
-        castling:   self.castling.join(''),
-        en_passant: self.en_passant,
-        halfmove:   self.halfmove.to_s,
-        fullmove:   self.fullmove.to_s,
+        board: board,
+        active: player == :white ? 'w' : 'b',
+        castling: castling.join(''),
+        en_passant: en_passant,
+        halfmove: halfmove.to_s,
+        fullmove: fullmove.to_s
       )
     end
-
   end
 end
