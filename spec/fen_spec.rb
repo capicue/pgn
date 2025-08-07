@@ -47,6 +47,11 @@ describe PGN::FEN do
       next_pos = pos.move("d6")
       next_pos.to_fen.en_passant.should == "-"
     end
+
+    it "should preserve the en_passant square when round-tripping through a position" do
+      pos = PGN::FEN.new("1r6/4k3/5p1p/2PB4/pP4P1/P1K4P/8/8 b - b3 0 1").to_position
+      pos.to_fen.en_passant.should == 'b3'
+    end
   end
 
   describe "halfmove counter" do

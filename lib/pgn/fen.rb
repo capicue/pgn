@@ -114,7 +114,7 @@ module PGN
     def to_position
       player     = self.active == 'w' ? :white : :black
       castling   = self.castling.split('') - ['-']
-      en_passant = self.en_passant == '-' ? nil : en_passant
+      en_passant = self.en_passant == '-' ? nil : self.en_passant
 
       PGN::Position.new(
         self.board,
